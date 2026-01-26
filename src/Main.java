@@ -1,6 +1,6 @@
 public class Main {
     public static void main(String[] args) {
-        Tablero t = new Tablero(2,15);
+        Tablero t = new Tablero(3,15);
         t.createTablero();
         t.printTablero();
         System.out.println(t.checkBoard());

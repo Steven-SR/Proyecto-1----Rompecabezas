@@ -2,6 +2,7 @@ public class fuerzabruta {
     public boolean canPlace(Tablero board, int row, int col, Pieza piece) {
         if (col == 0 && row == 0) {
             // ! hay que ver como buscar cual es la primera pieza :VV
+            // ? Como es fuerza bruta vamos una por una, y no sabremos hasta armarlo
         }
 
         //primera fila (solo verifica a la izquierda)
@@ -31,6 +32,8 @@ public class fuerzabruta {
                 pq no solo van a empezar al inicio desde col, sino cada vez que se repita el primer for
                 entonces talvez en vez de hacer 2 fors hacer la llamada recursiva con los nuevos valores de i y j?
 
+                ? creo que sirve :V
+
                 https://tenor.com/view/rayleigh-one-piece-crying-gif-7583256620608062087
                 */ 
                 for (Pieza piece : board.listaPiezas) { // explorar opciones
@@ -49,8 +52,9 @@ public class fuerzabruta {
         }
         return false;
     }
+}
 
-    static boolean solveNQUtil(int board[][], int col) {
+    /* static boolean solveNQUtil(int board[][], int col) {
         if (col >= N)
             return true;
 
@@ -70,7 +74,7 @@ public class fuerzabruta {
 
     }
 }
-
+ */
 /*  
     Choose: Make a choice for the next step towards a solution.
     Explore: Explore all possible options from the current choice.
