@@ -75,7 +75,7 @@ public class Tablero {
 
    //esto es para el backtrakcing que ocupa un bool
    //Revisa el tablero y devuelve true si todas las piezas estan en su lugar
-    public boolean checkBoard() {
+    public boolean checkTablero() {
         for (int i = 0; i<size; i++) {
             for(int j=0;j<size;j++){
                 //Para la primera pieza no hay que revisar nada
