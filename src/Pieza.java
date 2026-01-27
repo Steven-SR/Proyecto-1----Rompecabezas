@@ -21,8 +21,7 @@ public class Pieza {
     public int getLeft() {return left;}
 
     //Metodo para imprimir la pieza
-    //TODO mejorar la impresion
     public void printPieza(){
-        System.out.print("Up: " + up + " Right: " + right + " Down: " + down + " Left: " + left +  " || ");
+        System.out.print("[" + up + "," + right + "," + down + "," + left + "] ");
     }
 }

@@ -43,13 +43,6 @@ public class Tablero {
                 }
             }
         }
-        //Guardar las piezas en una lista para facilitar el acceso
-        listaPiezas = new ArrayList<>();
-        for(int i=0;i<size;i++){
-            for(int j=0;j<size;j++){
-                listaPiezas.add(tablero[i][j]);
-            }
-        }
     }
 
     public Pieza[][] getTablero() {
@@ -69,6 +62,13 @@ public class Tablero {
                 Pieza temp = tablero[i][j];
                 tablero[i][j] = tablero[swapRow][swapCol];
                 tablero[swapRow][swapCol] = temp;
+            }
+        }
+        //Actualizar la lista de piezas despues de desordenar
+        listaPiezas = new ArrayList<>();
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
+                listaPiezas.add(tablero[i][j]);
             }
         }
     }
@@ -142,6 +142,14 @@ public class Tablero {
         }
     }
 
+    //Obtiene una pieza en una posicion especifica
+    public Pieza getPieza(int row, int col) {
+        if (row >= 0 && row < size && col >= 0 && col < size) {
+            return tablero[row][col];
+        }
+        return null;
+    }
+
     //Remueve una pieza de una posicion especifica, coloca un null
     public void removePieza(int row, int col) {
         if (row >= 0 && row < size && col >= 0 && col < size) {
@@ -150,7 +158,6 @@ public class Tablero {
     }
 
     //Imprime el tablero en consola
-    //TODO mejorar la impresion
     public void printTablero() {
         for (int i = 0; i < size; i++) {
             System.out.println();
