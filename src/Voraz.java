@@ -105,7 +105,7 @@ public class Voraz {
             }
         }
         
-        return board.checkBoard();
+        return board.checkTablero();
     }
     
     /**

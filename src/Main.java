@@ -1,16 +1,16 @@
 public class Main {
     public static void main(String[] args) {
-        Tablero tResolver = new Tablero(100, 9);
+        Tablero tResolver = new Tablero(15, 9);
         tResolver.createTablero();
         
         System.out.println("=== TABLERO ORIGINAL ===");
         tResolver.printTablero();
-        System.out.println("\nTablero válido: " + tResolver.checkBoard());
+        System.out.println("\nTablero válido: " + tResolver.checkTablero());
         
         System.out.println("\n=== TABLERO DESORDENADO ===");
         tResolver.scrambleTablero();
         tResolver.printTablero();
-        System.out.println("Tablero válido: " + tResolver.checkBoard());
+        System.out.println("Tablero válido: " + tResolver.checkTablero());
         
         System.out.println("\n=== RESOLVIENDO CON ALGORITMO VORAZ ===");
         Voraz voraz = new Voraz();
@@ -30,7 +30,7 @@ public class Main {
         if (resultado) {
             System.out.println("\nTablero resuelto:");
             tResolver.printTablero();
-            System.out.println("\nTablero válido: " + tResolver.checkBoard());
+            System.out.println("\nTablero válido: " + tResolver.checkTablero());
         }
     }
 }
