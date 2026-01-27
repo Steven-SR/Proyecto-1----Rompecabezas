@@ -73,36 +73,6 @@ public class Tablero {
         }
     }
 
-    //TODO quitar el de debug :v
-    public void checkTablero() {
-        for (int i = 0; i<size; i++) {
-            for(int j=0;j<size;j++){
-                if(i==0 && j==0){
-                    continue;
-                }
-                else if(i==0){
-                    if(tablero[0][j].getLeft() != tablero[0][j-1].getRight()){
-                        System.out.println("No sirve we fila 0");
-                        return;
-                    }
-                }
-                else if(j==0){
-                    if(tablero[i][0].getUp() != tablero[i-1][0].getDown()){
-                        System.out.println("No sirve we columna 0");
-                        return;
-                    }
-                }
-                else{
-                    if(tablero[i][j].getLeft() != tablero[i][j-1].getRight() || tablero[i][j].getUp() != tablero[i-1][j].getDown()){
-                        System.out.println("No sirve we nigga");
-                    }
-                }
-            }
-        }
-        System.out.println("yippie");
-    }
-    
-
    //esto es para el backtrakcing que ocupa un bool
    //Revisa el tablero y devuelve true si todas las piezas estan en su lugar
     public boolean checkBoard() {
