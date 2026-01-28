@@ -10,165 +10,187 @@ public class fuerzabruta {
     private long podas = 0;
 
     /**
-     * Verifica si una pieza puede colocarse en la posicion (row, col).
-     * - Primera pieza (0,0): cualquier pieza puede colocarse
-     * - Primera fila: solo verifica que la izquierda coincida con la derecha de la
-     * pieza anterior
-     * - Primera columna: solo verifica que arriba coincida con abajo de la pieza
-     * superior
-     * - Resto: verifica ambos lados (izquierda y arriba)
+     * Verifica si una pieza puede colocarse en una posición específica.
+     * Compara los bordes de la pieza con sus vecinos (izquierda y arriba)
+     * para asegurar que coincidan los números.
+     * 
+     * @param board El tablero actual
+     * @param row   Fila de la posición
+     * @param col   Columna de la posición
+     * @param piece La pieza que se desea colocar
+     * @return true si la pieza encaja legalmente, false de lo contrario
      */
     public boolean canPlace(Tablero board, int row, int col, Pieza piece) {
-        // Primera pieza (0,0): cualquier pieza puede ir aqui
-        comparaciones += 2; // row == 0 && col == 0
-        if (row == 0 && col == 0) {
-            return true;
+        // Si es la primera pieza no ocupa verificar
+        comparaciones += 2; // row == 0 && col == 0 // +1
+        if (row == 0 && col == 0) { // +1
+            return true; // +1
         }
 
         // Primera fila (solo verifica a la izquierda)
-        comparaciones++; // row == 0
-        if (row == 0) {
-            asignaciones++; // leftPiece = ...
-            Pieza leftPiece = board.tablero[row][col - 1];
-            comparaciones += 2; // leftPiece != null && piece.getLeft() == leftPiece.getRight()
-            return leftPiece != null && piece.getLeft() == leftPiece.getRight();
+        comparaciones++; // row == 0 // +1
+        if (row == 0) { // +1
+            asignaciones++; // +1
+            Pieza leftPiece = board.tablero[row][col - 1]; // +1
+            comparaciones += 2; // +1
+            return leftPiece != null && piece.getLeft() == leftPiece.getRight(); // +1
         }
 
         // Primera columna (solo verifica arriba)
-        comparaciones++; // col == 0
-        if (col == 0) {
-            asignaciones++; // upPiece = ...
-            Pieza upPiece = board.tablero[row - 1][col];
-            comparaciones += 2; // upPiece != null && piece.getUp() == upPiece.getDown()
-            return upPiece != null && piece.getUp() == upPiece.getDown();
+        comparaciones++; // col == 0 // +1
+        if (col == 0) { // +1
+            asignaciones++; // +1
+            Pieza upPiece = board.tablero[row - 1][col]; // +1
+            comparaciones += 2; // +1
+            return upPiece != null && piece.getUp() == upPiece.getDown(); // +1
         }
 
         // Resto de posiciones (verifica izquierda y arriba)
-        asignaciones += 2; // leftPiece = ..., upPiece = ...
-        Pieza leftPiece = board.tablero[row][col - 1];
-        Pieza upPiece = board.tablero[row - 1][col];
+        asignaciones += 2; // +2
+        Pieza leftPiece = board.tablero[row][col - 1]; // +1
+        Pieza upPiece = board.tablero[row - 1][col]; // +1
 
-        comparaciones += 2; // leftPiece != null && piece.getLeft() == leftPiece.getRight()
-        asignaciones++; // leftMatches = ...
-        boolean leftMatches = leftPiece != null && piece.getLeft() == leftPiece.getRight();
+        comparaciones += 2; // +1
+        asignaciones++; // +1
+        boolean leftMatches = leftPiece != null && piece.getLeft() == leftPiece.getRight(); // +1
 
-        comparaciones += 2; // upPiece != null && piece.getUp() == upPiece.getDown()
-        asignaciones++; // upMatches = ...
-        boolean upMatches = upPiece != null && piece.getUp() == upPiece.getDown();
+        comparaciones += 2; // +1
+        asignaciones++; // +1
+        boolean upMatches = upPiece != null && piece.getUp() == upPiece.getDown(); // +1
 
-        comparaciones++; // leftMatches && upMatches
-        return leftMatches && upMatches;
+        comparaciones++; // +1
+        return leftMatches && upMatches; // +1
     }
+    // Suma canPlace: 1+1+1+1+1+1+1+1+1+1+1+1+2+1+1+1+1+1+1+1+1+1+1 = 23 (Peor caso)
+    // T_canPlace(N) = 23 = O(1)
 
     /**
-     * Resuelve el tablero usando fuerza bruta con backtracking.
-     * Recibe una lista de piezas disponibles para evitar usar la misma pieza dos
-     * veces.
+     * Este es el backtracking que usamos para resolver el rompecabezas.
+     * Intenta colocar cada pieza disponible en la posición actual, si encaja,
+     * avanza a la siguiente posición recursivamente. Si no hay solución,
+     * retrocede (backtrack) y prueba la siguiente pieza.
+     * 
+     * @param board           El tablero a completar
+     * @param row             Fila actual del proceso
+     * @param col             Columna actual del proceso
+     * @param availablePieces Lista de piezas que aún no han sido colocadas
+     * @return true si se encontró una solución completa, false si no
      */
     public boolean solveBoard(Tablero board, int row, int col, List<Pieza> availablePieces) {
         // Condicion de salida: si llegamos mas alla de la ultima fila, terminamos
-        comparaciones++; // row >= board.size
-        if (row >= board.size) {
-            return true; // Todas las piezas colocadas exitosamente
+        comparaciones++; // +1
+        if (row >= board.size) { // +1
+            return true; // +1
         }
 
         // Calcular siguiente posicion
-        asignaciones += 2; // nextCol = ..., nextRow = ...
-        int nextCol = col + 1;
-        int nextRow = row;
+        asignaciones += 2; // +2
+        int nextCol = col + 1; // +1
+        int nextRow = row; // +1
 
-        comparaciones++; // nextCol >= board.size
-        if (nextCol >= board.size) {
-            asignaciones += 2; // nextCol = 0, nextRow = row + 1
-            nextCol = 0;
-            nextRow = row + 1;
+        comparaciones++; // +1
+        if (nextCol >= board.size) { // +1
+            asignaciones += 2; // +2
+            nextCol = 0; // +1
+            nextRow = row + 1; // +1
         }
 
-        // Probar cada pieza disponible
-        asignaciones++; // i = 0
-        for (int i = 0; i < availablePieces.size(); i++) {
-            comparaciones++; // i < availablePieces.size()
+        // Probar cada pieza disponible (N = total de piezas)
+        for (int i = 0; i < availablePieces.size(); i++) { // 1, N+1, N+1
+            Pieza piece = availablePieces.get(i); // +N
 
-            asignaciones++; // piece = ...
-            Pieza piece = availablePieces.get(i);
-
-            if (canPlace(board, row, col, piece)) {
+            if (canPlace(board, row, col, piece)) { // +N * O(1)
                 // Hacer la eleccion
-                asignaciones++; // setPieza cuenta como asignacion
-                board.setPieza(row, col, piece);
+                asignaciones++; // +N
+                board.setPieza(row, col, piece); // +N
 
-                // Remover la pieza de las disponibles
-                asignaciones++; // remove modifica la lista
-                availablePieces.remove(i);
+                // Remover la pieza de las disponibles (List.remove es O(N))
+                asignaciones++; // +N
+                availablePieces.remove(i); // +N * N
 
                 // Llamada recursiva a la siguiente posicion
-                comparaciones++; // resultado de solveBoard
-                if (solveBoard(board, nextRow, nextCol, availablePieces)) {
-                    return true; // ¡Encontramos solucion!
+                comparaciones++; // resultado de solveBoard // +N
+                if (solveBoard(board, nextRow, nextCol, availablePieces)) { // +N * T(N-1)
+                    return true; // +1
                 }
 
                 // Backtrack: deshacer la eleccion
-                asignaciones++; // removePieza
-                board.removePieza(row, col);
-                asignaciones++; // add modifica la lista
-                availablePieces.add(i, piece); // Restaurar la pieza en su posicion original
+                asignaciones++; // +N
+                board.removePieza(row, col); // +N
+                asignaciones++; // +N
+                availablePieces.add(i, piece); // +N * N
             }
-            intentos++;
-            asignaciones++; // i++
+            intentos++; // +N
+            asignaciones++; // +N
         }
-        comparaciones++; // ultima comparacion del for
-        podas++;
-        return false; // No se encontro solucion con esta configuracion
+        comparaciones++; // +1
+        podas++; // +1
+        return false; // +1
     }
+    // Suma solveBoard: 1+1+2+1+1+1+1+2+1+1+1 + (N+1) + N+N+N + N*O(1) + N+N + N*N +
+    // N + N*T(N-1) + N+N+N + N*N + N+N + 1+1+1
+    // T_solveBoard(N) = N * T(N-1) + 2*N^2 + 13N + 14
+    // Big O: O(N * N!)
 
     /**
-     * Metodo wrapper para iniciar la resolucion del tablero.
-     * Crea una copia de la lista de piezas para no modificar la original.
+     * Inicializa el proceso de resolución por fuerza bruta.
+     * Resetea los contadores, limpia el tablero y prepara una copia
+     * de todas las piezas para comenzar el backtracking desde (0,0).
+     * 
+     * @param board El tablero con las piezas desordenadas
+     * @return true si el tablero fue resuelto exitosamente
      */
     public boolean solve(Tablero board) {
         // Reiniciar contadores
-        comparaciones = 0;
-        asignaciones = 0;
-        intentos = 0;
-        podas = 0;
+        comparaciones = 0; // +1
+        asignaciones = 0; // +1
+        intentos = 0; // +1
+        podas = 0; // +1
 
-        // Limpiar el tablero primero
-        asignaciones++; // i = 0
-        for (int i = 0; i < board.size; i++) {
-            comparaciones++; // i < board.size
-            asignaciones++; // j = 0
-            for (int j = 0; j < board.size; j++) {
-                comparaciones++; // j < board.size
-                asignaciones++; // removePieza
-                board.removePieza(i, j);
-                asignaciones++; // j++
+        // Limpiar el tablero primero (N = total de celdas, n = sqrt(N))
+        for (int i = 0; i < board.size; i++) { // 1, sqrt(N)+1, sqrt(N)+1
+            for (int j = 0; j < board.size; j++) { // sqrt(N)(1, sqrt(N)+1, sqrt(N)+1)
+                board.removePieza(i, j); // +N
             }
-            comparaciones++; // ultima comparacion del for interno
-            asignaciones++; // i++
         }
-        comparaciones++; // ultima comparacion del for externo
-
+        comparaciones++; // +1
         // Crear copia de la lista de piezas disponibles
-        asignaciones++; // availablePieces = ...
-        List<Pieza> availablePieces = new ArrayList<>(board.listaPiezas);
+        asignaciones++; // +1
+        List<Pieza> availablePieces = new ArrayList<>(board.listaPiezas); // +N
 
         // Iniciar resolucion desde la posicion (0, 0)
-        return solveBoard(board, 0, 0, availablePieces);
+        return solveBoard(board, 0, 0, availablePieces); // +T(N)
     }
+    // Suma solve: 1+1+1+1+1 + (sqrt(N)+1) + sqrt(N)+sqrt(N) + (N+sqrt(N)) + N+N+N+N
+    // + sqrt(N)+sqrt(N) + 1+1+N + T(N)
+    // T_solve(N) = T_solveBoard(N) + 5N + 7*sqrt(N) + 10
+    // Big O: O(N * N!)
 
     // Getters para los contadores
+    /**
+     * Obtiene el número de comparaciones totales realizadas.
+     */
     public long getComparaciones() {
         return comparaciones;
     }
 
+    /**
+     * Obtiene el número de asignaciones totales realizadas.
+     */
     public long getAsignaciones() {
         return asignaciones;
     }
 
+    /**
+     * Obtiene el número total de intentos realizados.
+     */
     public long getIntentos() {
         return intentos;
     }
 
+    /**
+     * Obtiene el número de podas realizadas durante el backtracking.
+     */
     public long getPodas() {
         return podas;
     }
@@ -204,7 +226,7 @@ public class fuerzabruta {
             System.out.println("¡Tablero resuelto!");
             tablero.printTablero();
             System.out.println("\n");
-            tablero.checkTablero(); // Verificar que esta correcto
+            tablero.checkBoard(); // Verificar que esta correcto
         } else {
             System.out.println("No se encontro solucion :(");
         }
@@ -217,3 +239,18 @@ public class fuerzabruta {
         System.out.println("Podas: " + solver.getPodas());
     }
 }
+
+/**
+ * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
+ * Sea N el numero total de piezas/celdas (N = n * n).
+ * 
+ * T(N) = T_solveBoard(N) + T_limpieza(N) + T_copia(N)
+ * T(N) = [N * T(N-1) + 2*N^2 + O(N)] + [O(N)] + [O(N)]
+ * 
+ * Aplicando expansion por recurrencia:
+ * T(N) = N * (N-1) * (N-2) * ... * 1 * T(0) + sumatoria_de_costos_locales
+ * T(N) approx N! * O(N^2)
+ * 
+ * Complejidad Final Big O: O(N * N!)
+ * En terminos del lado n del tablero: O(n^2 * (n^2)!)
+ */
