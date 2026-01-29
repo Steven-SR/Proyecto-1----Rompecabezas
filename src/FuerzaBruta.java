@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class fuerzabruta {
+public class FuerzaBruta {
 
     // Contadores para analisis de complejidad
     private long comparaciones = 0;
@@ -196,47 +196,91 @@ public class fuerzabruta {
     }
 
     /**
-     * Metodo main para probar el algoritmo.
+     * Ejecuta una prueba individual con un tamaño y rango especifico
      */
-    public static void main(String[] args) {
-        // Crear tablero de prueba
-        int size = 4;
-        int rangoNum = 9;
+    private static void ejecutarPrueba(int size, int rangoNum) {
+        System.out.println("\n" + "=".repeat(70));
+        System.out.println(String.format("PRUEBA: Tablero %dx%d con rango 0..%d", size, size, rangoNum));
+        System.out.println("=".repeat(70));
+
+        // Preparacion para medicion de memoria
+        System.gc();
+        Runtime runtime = Runtime.getRuntime();
+        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
         Tablero tablero = new Tablero(size, rangoNum);
         tablero.createTablero();
 
-        System.out.println("Tablero original (ordenado):");
+        System.out.println("\nTablero original (ordenado):");
         tablero.printTablero();
-        System.out.println("\n");
 
         // Desordenar el tablero
         tablero.scrambleTablero();
-        System.out.println("Tablero desordenado:");
+        System.out.println("\nTablero desordenado:");
         tablero.printTablero();
-        System.out.println("\n");
 
         // Resolver con fuerza bruta
-        fuerzabruta solver = new fuerzabruta();
-        long startTime = System.currentTimeMillis();
+        FuerzaBruta solver = new FuerzaBruta();
+        long startTime = System.nanoTime();
         boolean solved = solver.solve(tablero);
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
 
+        // Medicion de memoria post-ejecucion
+        long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
+        long memoryUsed = Math.max(0, memoryAfter - memoryBefore);
+
+        System.out.println("\n--- RESULTADO ---");
         if (solved) {
-            System.out.println("¡Tablero resuelto!");
+            System.out.println("Estado: ¡TABLERO RESUELTO!");
             tablero.printTablero();
-            System.out.println("\n");
-            tablero.checkBoard(); // Verificar que esta correcto
+            boolean check = tablero.checkTablero();
+            System.out.println("Verificacion: " + (check ? "CORRECTO" : "INCORRECTO"));
         } else {
-            System.out.println("No se encontro solucion :(");
+            System.out.println("Estado: No se encontro solucion");
         }
 
-        System.out.println("Tiempo de ejecucion: " + (endTime - startTime) + " ms");
+        System.out.println("\n--- Estadisticas ---");
+        double durationMs = (endTime - startTime) / 1_000_000.0;
+        System.out.println(String.format("Tiempo de ejecucion: %.3f ms", durationMs));
         System.out.println("Comparaciones: " + solver.getComparaciones());
         System.out.println("Asignaciones: " + solver.getAsignaciones());
-        System.out.println("Total de operaciones: " + (solver.getComparaciones() + solver.getAsignaciones()));
+        long lineasEjecutadas = solver.getComparaciones() + solver.getAsignaciones();
+        System.out.println("Lineas Ejecutadas (C + A): " + lineasEjecutadas);
         System.out.println("Intentos fallidos: " + solver.getIntentos());
         System.out.println("Podas: " + solver.getPodas());
+        System.out.println("Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
+    }
+
+    /**
+     * Metodo main para probar el algoritmo con multiples tamaños y rangos.
+     */
+    public static void main(String[] args) {
+        System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║           ALGORITMO DE FUERZA BRUTA - MEDICION EMPIRICA              ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+
+        // Tamaños de tablero a probar (limitados por complejidad O(N*N!))
+        int[] sizes = {3, 4}; // Fuerza bruta es muy lento para tamaños mayores
+        
+        // Rangos de numeros segun PDF
+        int[] rangos = {9, 15};
+
+        for (int rangoNum : rangos) {
+            System.out.println("\n");
+            System.out.println("▓".repeat(70));
+            System.out.println(String.format("▓  COMBINACION DE NUMEROS: 0..%d", rangoNum));
+            System.out.println("▓".repeat(70));
+
+            for (int size : sizes) {
+                ejecutarPrueba(size, rangoNum);
+            }
+        }
+
+        System.out.println("\n");
+        System.out.println("═".repeat(70));
+        System.out.println("NOTA: Fuerza bruta tiene complejidad O(N*N!), tamaños mayores");
+        System.out.println("a 4x4 pueden tomar tiempos extremadamente largos.");
+        System.out.println("═".repeat(70));
     }
 }
 
