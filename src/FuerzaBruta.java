@@ -251,39 +251,6 @@ public class FuerzaBruta {
         System.out.println("Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
     }
 }
-    /**
-     * Metodo main para probar el algoritmo con multiples tamaños y rangos.
-     */
-    /* public static void main(String[] args) {
-        System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
-        System.out.println("║           ALGORITMO DE FUERZA BRUTA - MEDICION EMPIRICA              ║");
-        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
-
-        // Tamaños de tablero a probar (limitados por complejidad O(N*N!))
-        int[] sizes = {3, 4}; // Fuerza bruta es muy lento para tamaños mayores
-        
-        // Rangos de numeros segun PDF
-        int[] rangos = {9, 15};
-
-        for (int rangoNum : rangos) {
-            System.out.println("\n");
-            System.out.println("▓".repeat(70));
-            System.out.println(String.format("▓  COMBINACION DE NUMEROS: 0..%d", rangoNum));
-            System.out.println("▓".repeat(70));
-
-            for (int size : sizes) {
-                ejecutarPrueba(size, rangoNum);
-            }
-        }
-
-        System.out.println("\n");
-        System.out.println("═".repeat(70));
-        System.out.println("NOTA: Fuerza bruta tiene complejidad O(N*N!), tamaños mayores");
-        System.out.println("a 4x4 pueden tomar tiempos extremadamente largos.");
-        System.out.println("═".repeat(70));
-    }
-} */
-
 /**
  * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
  * Sea N el numero total de piezas/celdas (N = n * n).
