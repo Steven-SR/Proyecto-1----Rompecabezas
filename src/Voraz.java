@@ -122,7 +122,7 @@ public class Voraz {
         for (int i = 0; i < board.size; i++) {
             for (int j = 0; j < board.size; j++) {
                 asignaciones++;
-                board.removePieza(i, j);
+                board.removePieza(i, j); //Colocar null en cada celda
                 asignaciones++;
             }
         }
@@ -455,121 +455,5 @@ public class Voraz {
         }
 
         return true;
-    }
-
-    /**
-     * Ejecuta una prueba individual con un tamano y rango especifico
-     */
-    private static void ejecutarPrueba(int size, int rangoNum, boolean conBacktracking) {
-        System.out.println("\n" + "=".repeat(70));
-        System.out.println(String.format("PRUEBA: Tablero %dx%d con rango 0..%d (Backtracking: %s)",
-                size, size, rangoNum, conBacktracking ? "SI" : "NO"));
-        System.out.println("=".repeat(70));
-
-        // Preparacion para medicion de memoria
-        System.gc();
-        Runtime runtime = Runtime.getRuntime();
-        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
-
-        Tablero tablero = new Tablero(size, rangoNum);
-        tablero.createTablero();
-
-        System.out.println("\nTablero original (ordenado):");
-        tablero.printTablero();
-
-        // Desordenar el tablero
-        tablero.scrambleTablero();
-        System.out.println("\nTablero desordenado:");
-        tablero.printTablero();
-
-        // Resolver con algoritmo voraz
-        Voraz solver = new Voraz(conBacktracking);
-        long startTime = System.nanoTime();
-        boolean solved = solver.solve(tablero);
-        long endTime = System.nanoTime();
-
-        // Medicion de memoria post-ejecucion
-        long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
-        long memoryUsed = Math.max(0, memoryAfter - memoryBefore);
-
-        System.out.println("\n--- RESULTADO ---");
-        if (solved) {
-            System.out.println("Estado: TABLERO RESUELTO CORRECTAMENTE");
-            tablero.printTablero();
-            System.out.println("Verificacion: " + (tablero.checkTablero() ? "CORRECTO" : "INCORRECTO"));
-        } else {
-            System.out.println("Estado: NO SE ENCONTRO SOLUCION COMPLETA");
-            System.out.println("Nota: El algoritmo voraz " +
-                    (conBacktracking ? "con backtracking no encontro solucion"
-                            : "sin backtracking no garantiza solucion"));
-            tablero.printTablero();
-        }
-
-        System.out.println("\n--- Estadisticas ---");
-        double durationMs = (endTime - startTime) / 1_000_000.0;
-        System.out.println(String.format("Tiempo de ejecucion: %.3f ms", durationMs));
-        System.out.println("Comparaciones: " + solver.getComparaciones());
-        System.out.println("Asignaciones: " + solver.getAsignaciones());
-        if (conBacktracking) {
-            System.out.println("Intentos de backtrack: " + solver.getIntentosBacktrack());
-        }
-        long lineasEjecutadas = solver.getComparaciones() + solver.getAsignaciones();
-        System.out.println("Lineas Ejecutadas (C + A): " + lineasEjecutadas);
-        System.out.println(
-                "Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
-    }
-
-    /**
-     * Metodo main para probar el algoritmo con multiples tamanos y rangos.
-     */
-    public static void main(String[] args) {
-        System.out.println("=====================================================================");
-        System.out.println("              ALGORITMO VORAZ - MEDICION EMPIRICA                    ");
-        System.out.println("=====================================================================");
-
-        // Tamanos de tablero a probar
-        int[] sizes = { 3, 5, 10, 15, 30 };
-
-        // Rangos de numeros segun PDF
-        int[] rangos = { 9, 15 };
-
-        // Probar SIN backtracking
-        System.out.println("\n");
-        System.out.println("*".repeat(70));
-        System.out.println("*  MODO: VORAZ SIN BACKTRACKING");
-        System.out.println("*".repeat(70));
-
-        for (int rangoNum : rangos) {
-            System.out.println("\n");
-            System.out.println("-".repeat(70));
-            System.out.println(String.format("  COMBINACION DE NUMEROS: 0..%d", rangoNum));
-            System.out.println("-".repeat(70));
-
-            for (int size : sizes) {
-                ejecutarPrueba(size, rangoNum, false);
-            }
-        }
-
-        // Probar CON backtracking
-        System.out.println("\n");
-        System.out.println("*".repeat(70));
-        System.out.println("*  MODO: VORAZ CON BACKTRACKING");
-        System.out.println("*".repeat(70));
-
-        for (int rangoNum : rangos) {
-            System.out.println("\n");
-            System.out.println("-".repeat(70));
-            System.out.println(String.format("  COMBINACION DE NUMEROS: 0..%d", rangoNum));
-            System.out.println("-".repeat(70));
-
-            for (int size : sizes) {
-                ejecutarPrueba(size, rangoNum, true);
-            }
-        }
-
-        System.out.println("\n");
-        System.out.println("=".repeat(70));
-        System.out.println("Algoritmo Voraz completado para todos los tamanos.");
-        System.out.println("=".repeat(70));
     }
 }

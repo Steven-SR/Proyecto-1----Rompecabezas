@@ -194,62 +194,6 @@ public class FuerzaBruta {
     public long getPodas() {
         return podas;
     }
-
-    /**
-     * Ejecuta una prueba individual con un tamaño y rango especifico
-     */
-    /* private static void ejecutarPrueba(int size, int rangoNum) {
-        System.out.println("\n" + "=".repeat(70));
-        System.out.println(String.format("PRUEBA: Tablero %dx%d con rango 0..%d", size, size, rangoNum));
-        System.out.println("=".repeat(70));
-
-        // Preparacion para medicion de memoria
-        System.gc();
-        Runtime runtime = Runtime.getRuntime();
-        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
-
-        Tablero tablero = new Tablero(size, rangoNum);
-        tablero.createTablero();
-
-        System.out.println("\nTablero original (ordenado):");
-        tablero.printTablero();
-
-        // Desordenar el tablero
-        tablero.scrambleTablero();
-        System.out.println("\nTablero desordenado:");
-        tablero.printTablero();
-
-        // Resolver con fuerza bruta
-        FuerzaBruta solver = new FuerzaBruta();
-        long startTime = System.nanoTime();
-        boolean solved = solver.solve(tablero);
-        long endTime = System.nanoTime();
-
-        // Medicion de memoria post-ejecucion
-        long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
-        long memoryUsed = Math.max(0, memoryAfter - memoryBefore);
-
-        System.out.println("\n--- RESULTADO ---");
-        if (solved) {
-            System.out.println("Estado: ¡TABLERO RESUELTO!");
-            tablero.printTablero();
-            boolean check = tablero.checkTablero();
-            System.out.println("Verificacion: " + (check ? "CORRECTO" : "INCORRECTO"));
-        } else {
-            System.out.println("Estado: No se encontro solucion");
-        }
-
-        System.out.println("\n--- Estadisticas ---");
-        double durationMs = (endTime - startTime) / 1_000_000.0;
-        System.out.println(String.format("Tiempo de ejecucion: %.3f ms", durationMs));
-        System.out.println("Comparaciones: " + solver.getComparaciones());
-        System.out.println("Asignaciones: " + solver.getAsignaciones());
-        long lineasEjecutadas = solver.getComparaciones() + solver.getAsignaciones();
-        System.out.println("Lineas Ejecutadas (C + A): " + lineasEjecutadas);
-        System.out.println("Intentos fallidos: " + solver.getIntentos());
-        System.out.println("Podas: " + solver.getPodas());
-        System.out.println("Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
-    } */
 }
 /**
  * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
