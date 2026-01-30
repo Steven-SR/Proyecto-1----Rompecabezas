@@ -50,7 +50,7 @@ public class Main {
 
     /** Tamanos de tablero a probar */
     static final int[] sizesSmall = { 3, 5, 10, 15, 30 };
-    static final int[] SIZES_LARGE = { 60, 100 };
+    static final int[] sizesLarge = { 60, 100 };
 
     /** Rangos de numeros segun el PDF del proyecto */
     static final int[] rangos = { 9, 15 };
@@ -168,8 +168,12 @@ public class Main {
                     if (size <= maxSizeVorazBacktrack) {
                         ejecutarPruebaVoraz(size, rango, true);
                     } else {
-                        ejecutarPruebaConTimeout("Voraz+Backtrack", size, rango,
-                                () -> ejecutarVorazInterno(size, rango, true));
+                        System.out.println("\n[OMITIDO] Tablero " + size + "x" + size +
+                                " - Voraz con Backtrack no es viable para este tamano");
+                        resultadoPrueba r = new resultadoPrueba("Voraz+Backtrack", size, rango);
+                        r.estado = "OMITIDO";
+                        r.tiempoMs = -1;
+                        resultados.add(r);
                     }
                 }
             }
@@ -213,9 +217,9 @@ public class Main {
      */
     private static int[] buildSizeArray() {
         if (enableLargePuzzles) {
-            int[] combined = new int[sizesSmall.length + SIZES_LARGE.length];
+            int[] combined = new int[sizesSmall.length + sizesLarge.length];
             System.arraycopy(sizesSmall, 0, combined, 0, sizesSmall.length);
-            System.arraycopy(SIZES_LARGE, 0, combined, sizesSmall.length, SIZES_LARGE.length);
+            System.arraycopy(sizesLarge, 0, combined, sizesSmall.length, sizesLarge.length);
             return combined;
         }
         return sizesSmall;

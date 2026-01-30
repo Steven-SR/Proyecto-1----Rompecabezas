@@ -250,11 +250,11 @@ public class FuerzaBruta {
         System.out.println("Podas: " + solver.getPodas());
         System.out.println("Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
     }
-
+}
     /**
      * Metodo main para probar el algoritmo con multiples tamaños y rangos.
      */
-    public static void main(String[] args) {
+    /* public static void main(String[] args) {
         System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
         System.out.println("║           ALGORITMO DE FUERZA BRUTA - MEDICION EMPIRICA              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
@@ -282,7 +282,7 @@ public class FuerzaBruta {
         System.out.println("a 4x4 pueden tomar tiempos extremadamente largos.");
         System.out.println("═".repeat(70));
     }
-}
+} */
 
 /**
  * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
