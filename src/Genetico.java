@@ -213,11 +213,14 @@ public class Genetico {
 
             // Generar la cantidad de hijos especificada
             int crucesRealizados = 0;
+            int intentosSinProgreso = 0;
+            int maxIntentosSinProgreso = cantidadHijos * 10; // limite para evitar bucle infinito
             asignaciones++;
 
-            while (todosLosHijos.size() < cantidadHijos) {
+            while (todosLosHijos.size() < cantidadHijos && intentosSinProgreso < maxIntentosSinProgreso) {
                 comparaciones++;
                 crucesRealizados++;
+                int hijosPrevios = todosLosHijos.size();
 
                 // Seleccionar padres (los mejores de la poblacion)
                 int idxPadre1 = seleccionarMejor(fitnesses);
@@ -262,6 +265,13 @@ public class Genetico {
                     todosLosHijos.add(hijo2);
                     hijosGenerados.add(clave2);
                     asignaciones++;
+                }
+
+                // Detectar si no hubo progreso (no se agregaron hijos nuevos)
+                if (todosLosHijos.size() == hijosPrevios) {
+                    intentosSinProgreso++;
+                } else {
+                    intentosSinProgreso = 0; // resetear si hubo progreso
                 }
             }
 

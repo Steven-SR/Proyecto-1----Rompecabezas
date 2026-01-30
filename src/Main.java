@@ -56,8 +56,9 @@ public class Main {
     static final int[] rangos = { 9, 15 };
 
     /** Tamanos maximos recomendados para cada algoritmo */
-    static final int maxSizeFuerzaBruta = 5; // O(N*N!) es muy lento
-    static final int maxSizeVorazBacktrack = 5; // Con backtracking puede ser lento
+    static final int maxSizeFuerzaBruta = 5; // Sin timeout
+    static final int maxSizeVorazBacktrack = 5; // Sin timeout
+    static final int maxSizeConTimeout = 30; // Máximo tamaño para ejecutar con timeout (omite 60, 100)
 
     // ========================================================================
     // ALMACENAMIENTO DE RESULTADOS
@@ -124,6 +125,10 @@ public class Main {
                 for (int size : sizes) {
                     if (size <= maxSizeFuerzaBruta) {
                         ejecutarPruebaFuerzaBruta(size, rango);
+                    } else if (size <= maxSizeConTimeout) {
+                        // Ejecutar con timeout para tamaños medianos
+                        ejecutarPruebaConTimeout("Fuerza Bruta", size, rango,
+                                () -> ejecutarFuerzaBrutaInterno(size, rango));
                     } else {
                         System.out.println("\n[OMITIDO] Tablero " + size + "x" + size +
                                 " - Fuerza bruta no es viable para este tamano");
@@ -167,6 +172,10 @@ public class Main {
                 for (int size : sizes) {
                     if (size <= maxSizeVorazBacktrack) {
                         ejecutarPruebaVoraz(size, rango, true);
+                    } else if (size <= maxSizeConTimeout) {
+                        // Ejecutar con timeout para tamaños medianos
+                        ejecutarPruebaConTimeout("Voraz+Backtrack", size, rango,
+                                () -> ejecutarVorazInterno(size, rango, true));
                     } else {
                         System.out.println("\n[OMITIDO] Tablero " + size + "x" + size +
                                 " - Voraz con Backtrack no es viable para este tamano");
@@ -303,6 +312,46 @@ public class Main {
         }
 
         resultados.add(resultado);
+    }
+
+    /**
+     * Metodo interno para ejecutar Fuerza Bruta (usado tambien con timeout)
+     */
+    private static resultadoPrueba ejecutarFuerzaBrutaInterno(int size, int rango) {
+        resultadoPrueba resultado = new resultadoPrueba("Fuerza Bruta", size, rango);
+
+        try {
+            // Preparacion para medicion de memoria
+            System.gc();
+            Runtime runtime = Runtime.getRuntime();
+            long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
+
+            // Crear y preparar tablero
+            Tablero tablero = new Tablero(size, rango);
+            tablero.createTablero();
+            tablero.scrambleTablero();
+
+            // Resolver
+            FuerzaBruta solver = new FuerzaBruta();
+            long startTime = System.nanoTime();
+            boolean solved = solver.solve(tablero);
+            long endTime = System.nanoTime();
+
+            // Medicion de memoria
+            long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
+
+            // Guardar resultados
+            resultado.tiempoMs = (endTime - startTime) / 1_000_000.0;
+            resultado.comparaciones = solver.getComparaciones();
+            resultado.asignaciones = solver.getAsignaciones();
+            resultado.memoriaBytes = Math.max(0, memoryAfter - memoryBefore);
+            resultado.estado = solved ? "RESUELTO" : "NO_RESUELTO";
+
+        } catch (Exception e) {
+            resultado.estado = "ERROR";
+        }
+
+        return resultado;
     }
 
     /**
