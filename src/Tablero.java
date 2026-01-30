@@ -23,6 +23,12 @@ public class Tablero {
 
     // Crea un tablero ordenado de base
     public void createTablero() {
+        // Si size es 3, usar un tablero fijo predefinido
+        if (size == 3) {
+            createTableroFijo();
+            return;
+        }
+        
         // Llenar el tablero de piezas
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -48,6 +54,35 @@ public class Tablero {
                 }
             }
         }
+    }
+    
+    // Crea un tablero fijo 3x3, tal y como se indica en el enunciado, diferente para 0 a 9 y 0 a 15
+    private void createTableroFijo() {
+        if (rangoNum == 9) {
+           tablero[0][0] = new Pieza(7,3,3,1);
+            tablero[0][1] = new Pieza(1,4,6,3);
+            tablero[0][2] = new Pieza(4,1,1,4);
+        
+            tablero[1][0] = new Pieza(3,4,0,4);
+            tablero[1][1] = new Pieza(6,7,6,4);
+            tablero[1][2] = new Pieza(1,7,7,7);
+        
+            tablero[2][0] = new Pieza(0,2,8,4);
+            tablero[2][1] = new Pieza(6,3,4,2);
+            tablero[2][2] = new Pieza(7,1,8,3); 
+            return;
+        }
+        tablero[0][0] = new Pieza(11,8,9,14);
+        tablero[0][1] = new Pieza(14,13,7,8);
+        tablero[0][2] = new Pieza(13,7,10,13);
+        
+        tablero[1][0] = new Pieza(9,8,6,14);
+        tablero[1][1] = new Pieza(7,7,4,8);
+        tablero[1][2] = new Pieza(10,5,0,7);
+        
+        tablero[2][0] = new Pieza(6,8,7,11);
+        tablero[2][1] = new Pieza(4,13,7,8);
+        tablero[2][2] = new Pieza(0,8,14,13);
     }
 
     public Pieza[][] getTablero() {

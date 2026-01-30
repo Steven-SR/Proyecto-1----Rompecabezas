@@ -56,7 +56,7 @@ public class Main {
     static final int[] RANGOS = { 9, 15 };
 
     /** Tamanos maximos recomendados para cada algoritmo */
-    static final int MAX_SIZE_FUERZA_BRUTA = 4; // O(N*N!) es muy lento
+    static final int MAX_SIZE_FUERZA_BRUTA = 5; // O(N*N!) es muy lento
     static final int MAX_SIZE_VORAZ_BACKTRACK = 5; // Con backtracking puede ser lento
 
     // ========================================================================
