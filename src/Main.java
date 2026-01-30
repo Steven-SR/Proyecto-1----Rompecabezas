@@ -31,45 +31,45 @@ public class Main {
     // ========================================================================
 
     /** Habilitar pruebas de puzzles grandes (60x60, 100x100) */
-    static final boolean ENABLE_LARGE_PUZZLES = true;
+    static final boolean enableLargePuzzles = true;
 
     /** Tiempo maximo de ejecucion por prueba (en segundos) */
-    static final int TIMEOUT_SECONDS = 60;
+    static final int timeoutSeconds = 60;
 
     /** Habilitar pruebas de Fuerza Bruta (muy lento para puzzles grandes) */
-    static final boolean TEST_FUERZA_BRUTA = true;
+    static final boolean testFuerzaBruta = true;
 
     /** Habilitar pruebas de Voraz SIN backtracking */
-    static final boolean TEST_VORAZ_SIN_BACKTRACKING = true;
+    static final boolean testVorazSinBacktracking = true;
 
     /** Habilitar pruebas de Voraz CON backtracking */
-    static final boolean TEST_VORAZ_CON_BACKTRACKING = true;
+    static final boolean testVorazConBacktracking = true;
 
     /** Habilitar pruebas de Algoritmo Genetico */
-    static final boolean TEST_GENETICO = true;
+    static final boolean testGenetico = true;
 
     /** Tamanos de tablero a probar */
-    static final int[] SIZES_SMALL = { 3, 5, 10, 15, 30 };
+    static final int[] sizesSmall = { 3, 5, 10, 15, 30 };
     static final int[] SIZES_LARGE = { 60, 100 };
 
     /** Rangos de numeros segun el PDF del proyecto */
-    static final int[] RANGOS = { 9, 15 };
+    static final int[] rangos = { 9, 15 };
 
     /** Tamanos maximos recomendados para cada algoritmo */
-    static final int MAX_SIZE_FUERZA_BRUTA = 5; // O(N*N!) es muy lento
-    static final int MAX_SIZE_VORAZ_BACKTRACK = 5; // Con backtracking puede ser lento
+    static final int maxSizeFuerzaBruta = 5; // O(N*N!) es muy lento
+    static final int maxSizeVorazBacktrack = 5; // Con backtracking puede ser lento
 
     // ========================================================================
     // ALMACENAMIENTO DE RESULTADOS
     // ========================================================================
 
     /** Lista de resultados para el archivo de resumen */
-    static List<ResultadoPrueba> resultados = new ArrayList<>();
+    static List<resultadoPrueba> resultados = new ArrayList<>();
 
     /**
      * Clase para almacenar los resultados de cada prueba
      */
-    static class ResultadoPrueba {
+    static class resultadoPrueba {
         String algoritmo;
         int tamano;
         int rango;
@@ -79,7 +79,7 @@ public class Main {
         long memoriaBytes;
         String estado; // RESUELTO, NO_RESUELTO, TIMEOUT, ERROR
 
-        ResultadoPrueba(String algoritmo, int tamano, int rango) {
+        resultadoPrueba(String algoritmo, int tamano, int rango) {
             this.algoritmo = algoritmo;
             this.tamano = tamano;
             this.rango = rango;
@@ -98,13 +98,13 @@ public class Main {
         System.out.println("=====================================================================");
         System.out.println();
         System.out.println("Configuracion actual:");
-        System.out.println("  - Timeout por prueba: " + TIMEOUT_SECONDS + " segundos");
-        System.out.println("  - Puzzles grandes (60x60, 100x100): " + (ENABLE_LARGE_PUZZLES ? "SI" : "NO"));
+        System.out.println("  - Timeout por prueba: " + timeoutSeconds + " segundos");
+        System.out.println("  - Puzzles grandes (60x60, 100x100): " + (enableLargePuzzles ? "SI" : "NO"));
         System.out.println("  - Fuerza Bruta: "
-                + (TEST_FUERZA_BRUTA ? "SI (max " + MAX_SIZE_FUERZA_BRUTA + "x" + MAX_SIZE_FUERZA_BRUTA + ")" : "NO"));
-        System.out.println("  - Voraz sin backtracking: " + (TEST_VORAZ_SIN_BACKTRACKING ? "SI" : "NO"));
-        System.out.println("  - Voraz con backtracking: " + (TEST_VORAZ_CON_BACKTRACKING ? "SI" : "NO"));
-        System.out.println("  - Genetico: " + (TEST_GENETICO ? "SI" : "NO"));
+                + (testFuerzaBruta ? "SI (max " + maxSizeFuerzaBruta + "x" + maxSizeFuerzaBruta + ")" : "NO"));
+        System.out.println("  - Voraz sin backtracking: " + (testVorazSinBacktracking ? "SI" : "NO"));
+        System.out.println("  - Voraz con backtracking: " + (testVorazConBacktracking ? "SI" : "NO"));
+        System.out.println("  - Genetico: " + (testGenetico ? "SI" : "NO"));
         System.out.println();
 
         // Construir lista de tamanos a probar
@@ -113,21 +113,21 @@ public class Main {
         // ====================================================================
         // FUERZA BRUTA
         // ====================================================================
-        if (TEST_FUERZA_BRUTA) {
+        if (testFuerzaBruta) {
             System.out.println("\n");
             System.out.println("#####################################################################");
             System.out.println("#                    ALGORITMO: FUERZA BRUTA                        #");
             System.out.println("#####################################################################");
 
-            for (int rango : RANGOS) {
+            for (int rango : rangos) {
                 System.out.println("\n--- Rango de valores: 0.." + rango + " ---");
                 for (int size : sizes) {
-                    if (size <= MAX_SIZE_FUERZA_BRUTA) {
+                    if (size <= maxSizeFuerzaBruta) {
                         ejecutarPruebaFuerzaBruta(size, rango);
                     } else {
                         System.out.println("\n[OMITIDO] Tablero " + size + "x" + size +
                                 " - Fuerza bruta no es viable para este tamano");
-                        ResultadoPrueba r = new ResultadoPrueba("Fuerza Bruta", size, rango);
+                        resultadoPrueba r = new resultadoPrueba("Fuerza Bruta", size, rango);
                         r.estado = "OMITIDO";
                         r.tiempoMs = -1;
                         resultados.add(r);
@@ -139,13 +139,13 @@ public class Main {
         // ====================================================================
         // VORAZ SIN BACKTRACKING
         // ====================================================================
-        if (TEST_VORAZ_SIN_BACKTRACKING) {
+        if (testVorazSinBacktracking) {
             System.out.println("\n");
             System.out.println("#####################################################################");
             System.out.println("#               ALGORITMO: VORAZ (SIN BACKTRACKING)                 #");
             System.out.println("#####################################################################");
 
-            for (int rango : RANGOS) {
+            for (int rango : rangos) {
                 System.out.println("\n--- Rango de valores: 0.." + rango + " ---");
                 for (int size : sizes) {
                     ejecutarPruebaVoraz(size, rango, false);
@@ -156,16 +156,16 @@ public class Main {
         // ====================================================================
         // VORAZ CON BACKTRACKING
         // ====================================================================
-        if (TEST_VORAZ_CON_BACKTRACKING) {
+        if (testVorazConBacktracking) {
             System.out.println("\n");
             System.out.println("#####################################################################");
             System.out.println("#               ALGORITMO: VORAZ (CON BACKTRACKING)                 #");
             System.out.println("#####################################################################");
 
-            for (int rango : RANGOS) {
+            for (int rango : rangos) {
                 System.out.println("\n--- Rango de valores: 0.." + rango + " ---");
                 for (int size : sizes) {
-                    if (size <= MAX_SIZE_VORAZ_BACKTRACK) {
+                    if (size <= maxSizeVorazBacktrack) {
                         ejecutarPruebaVoraz(size, rango, true);
                     } else {
                         ejecutarPruebaConTimeout("Voraz+Backtrack", size, rango,
@@ -178,13 +178,13 @@ public class Main {
         // ====================================================================
         // ALGORITMO GENETICO
         // ====================================================================
-        if (TEST_GENETICO) {
+        if (testGenetico) {
             System.out.println("\n");
             System.out.println("#####################################################################");
             System.out.println("#                   ALGORITMO: GENETICO                             #");
             System.out.println("#####################################################################");
 
-            for (int rango : RANGOS) {
+            for (int rango : rangos) {
                 System.out.println("\n--- Rango de valores: 0.." + rango + " ---");
                 for (int size : sizes) {
                     ejecutarPruebaGenetico(size, rango);
@@ -212,42 +212,42 @@ public class Main {
      * Construye el array de tamanos segun la configuracion
      */
     private static int[] buildSizeArray() {
-        if (ENABLE_LARGE_PUZZLES) {
-            int[] combined = new int[SIZES_SMALL.length + SIZES_LARGE.length];
-            System.arraycopy(SIZES_SMALL, 0, combined, 0, SIZES_SMALL.length);
-            System.arraycopy(SIZES_LARGE, 0, combined, SIZES_SMALL.length, SIZES_LARGE.length);
+        if (enableLargePuzzles) {
+            int[] combined = new int[sizesSmall.length + SIZES_LARGE.length];
+            System.arraycopy(sizesSmall, 0, combined, 0, sizesSmall.length);
+            System.arraycopy(SIZES_LARGE, 0, combined, sizesSmall.length, SIZES_LARGE.length);
             return combined;
         }
-        return SIZES_SMALL;
+        return sizesSmall;
     }
 
     /**
      * Ejecuta una prueba con timeout usando ExecutorService
      */
     private static void ejecutarPruebaConTimeout(String nombreAlgoritmo, int size, int rango,
-            Callable<ResultadoPrueba> tarea) {
+            Callable<resultadoPrueba> tarea) {
 
         System.out.println("\n=== " + nombreAlgoritmo + " - Tablero " + size + "x" + size +
                 " (rango 0.." + rango + ") ===");
-        System.out.println("[Ejecutando con timeout de " + TIMEOUT_SECONDS + " segundos...]");
+        System.out.println("[Ejecutando con timeout de " + timeoutSeconds + " segundos...]");
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<ResultadoPrueba> future = executor.submit(tarea);
+        Future<resultadoPrueba> future = executor.submit(tarea);
 
         try {
-            ResultadoPrueba resultado = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            resultadoPrueba resultado = future.get(timeoutSeconds, TimeUnit.SECONDS);
             resultados.add(resultado);
             imprimirResultado(resultado);
         } catch (TimeoutException e) {
             future.cancel(true);
-            System.out.println("[TIMEOUT] La prueba excedio " + TIMEOUT_SECONDS + " segundos");
-            ResultadoPrueba r = new ResultadoPrueba(nombreAlgoritmo, size, rango);
+            System.out.println("[TIMEOUT] La prueba excedio " + timeoutSeconds + " segundos");
+            resultadoPrueba r = new resultadoPrueba(nombreAlgoritmo, size, rango);
             r.estado = "TIMEOUT";
-            r.tiempoMs = TIMEOUT_SECONDS * 1000.0;
+            r.tiempoMs = timeoutSeconds * 1000.0;
             resultados.add(r);
         } catch (Exception e) {
             System.out.println("[ERROR] " + e.getMessage());
-            ResultadoPrueba r = new ResultadoPrueba(nombreAlgoritmo, size, rango);
+            resultadoPrueba r = new resultadoPrueba(nombreAlgoritmo, size, rango);
             r.estado = "ERROR";
             resultados.add(r);
         } finally {
@@ -262,7 +262,7 @@ public class Main {
         System.out.println("\n=== Fuerza Bruta - Tablero " + size + "x" + size +
                 " (rango 0.." + rango + ") ===");
 
-        ResultadoPrueba resultado = new ResultadoPrueba("Fuerza Bruta", size, rango);
+        resultadoPrueba resultado = new resultadoPrueba("Fuerza Bruta", size, rango);
 
         try {
             // Preparacion para medicion de memoria
@@ -309,7 +309,7 @@ public class Main {
         System.out.println("\n=== " + nombre + " - Tablero " + size + "x" + size +
                 " (rango 0.." + rango + ") ===");
 
-        ResultadoPrueba resultado = ejecutarVorazInterno(size, rango, conBacktracking);
+        resultadoPrueba resultado = ejecutarVorazInterno(size, rango, conBacktracking);
         imprimirResultado(resultado);
         resultados.add(resultado);
     }
@@ -317,9 +317,9 @@ public class Main {
     /**
      * Metodo interno para ejecutar Voraz (usado tambien con timeout)
      */
-    private static ResultadoPrueba ejecutarVorazInterno(int size, int rango, boolean conBacktracking) {
+    private static resultadoPrueba ejecutarVorazInterno(int size, int rango, boolean conBacktracking) {
         String nombre = conBacktracking ? "Voraz+Backtrack" : "Voraz";
-        ResultadoPrueba resultado = new ResultadoPrueba(nombre, size, rango);
+        resultadoPrueba resultado = new resultadoPrueba(nombre, size, rango);
 
         try {
             // Preparacion para medicion de memoria
@@ -369,7 +369,7 @@ public class Main {
             return;
         }
 
-        ResultadoPrueba resultado = ejecutarGeneticoInterno(size, rango);
+        resultadoPrueba resultado = ejecutarGeneticoInterno(size, rango);
         imprimirResultado(resultado);
         resultados.add(resultado);
     }
@@ -377,8 +377,8 @@ public class Main {
     /**
      * Metodo interno para ejecutar Genetico (usado tambien con timeout)
      */
-    private static ResultadoPrueba ejecutarGeneticoInterno(int size, int rango) {
-        ResultadoPrueba resultado = new ResultadoPrueba("Genetico", size, rango);
+    private static resultadoPrueba ejecutarGeneticoInterno(int size, int rango) {
+        resultadoPrueba resultado = new resultadoPrueba("Genetico", size, rango);
 
         try {
             // Preparacion para medicion de memoria
@@ -428,7 +428,7 @@ public class Main {
     /**
      * Imprime el resultado de una prueba
      */
-    private static void imprimirResultado(ResultadoPrueba r) {
+    private static void imprimirResultado(resultadoPrueba r) {
         System.out.println("  Estado: " + r.estado);
         if (r.tiempoMs >= 0) {
             System.out.println(String.format("  Tiempo: %.3f ms", r.tiempoMs));
@@ -457,15 +457,15 @@ public class Main {
             writer.println();
             writer.println("Fecha de ejecucion: " +
                     LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            writer.println("Timeout configurado: " + TIMEOUT_SECONDS + " segundos");
+            writer.println("Timeout configurado: " + timeoutSeconds + " segundos");
             writer.println();
 
             // Agrupar por algoritmo
             String[] algoritmos = { "Fuerza Bruta", "Voraz", "Voraz+Backtrack", "Genetico" };
 
             for (String algo : algoritmos) {
-                List<ResultadoPrueba> resultadosAlgo = new ArrayList<>();
-                for (ResultadoPrueba r : resultados) {
+                List<resultadoPrueba> resultadosAlgo = new ArrayList<>();
+                for (resultadoPrueba r : resultados) {
                     if (r.algoritmo.equals(algo)) {
                         resultadosAlgo.add(r);
                     }
@@ -483,7 +483,7 @@ public class Main {
                         "Tamano", "Rango", "Tiempo(ms)", "Comparaciones", "Asignaciones", "Memoria(KB)", "Estado"));
                 writer.println("-".repeat(95));
 
-                for (ResultadoPrueba r : resultadosAlgo) {
+                for (resultadoPrueba r : resultadosAlgo) {
                     if (r.tiempoMs >= 0) {
                         writer.println(String.format("%-8s | %-6s | %12.3f | %14d | %14d | %12.2f | %-12s",
                                 r.tamano + "x" + r.tamano,
@@ -522,7 +522,7 @@ public class Main {
                 int errores = 0;
                 double tiempoTotal = 0;
 
-                for (ResultadoPrueba r : resultados) {
+                for (resultadoPrueba r : resultados) {
                     if (r.algoritmo.equals(algo)) {
                         switch (r.estado) {
                             case "RESUELTO":
