@@ -198,7 +198,7 @@ public class FuerzaBruta {
     /**
      * Ejecuta una prueba individual con un tamaño y rango especifico
      */
-    private static void ejecutarPrueba(int size, int rangoNum) {
+    /* private static void ejecutarPrueba(int size, int rangoNum) {
         System.out.println("\n" + "=".repeat(70));
         System.out.println(String.format("PRUEBA: Tablero %dx%d con rango 0..%d", size, size, rangoNum));
         System.out.println("=".repeat(70));
@@ -249,7 +249,7 @@ public class FuerzaBruta {
         System.out.println("Intentos fallidos: " + solver.getIntentos());
         System.out.println("Podas: " + solver.getPodas());
         System.out.println("Memoria usada: " + memoryUsed + " bytes (" + String.format("%.2f", memoryUsed / 1024.0) + " KB)");
-    }
+    } */
 }
 /**
  * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
