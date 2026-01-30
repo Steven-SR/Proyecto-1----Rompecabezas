@@ -139,6 +139,9 @@ public class Genetico {
 
     /**
      * Resuelve el rompecabezas usando algoritmo genetico
+     * 
+     * Donde: N = numero total de piezas (n*n), P = tamanio poblacion,
+     *        H = cantidad de hijos por generacion, G = numero de generaciones (10)
      */
     public boolean solve(Tablero board) {
         resetearContadores();
@@ -152,7 +155,7 @@ public class Genetico {
 
         // Fitness maximo posible
         int fitnessObjetivo = 2 * n * (n - 1);
-        asignaciones += 5;
+        asignaciones += 5; // +5
 
         System.out.println("=".repeat(60));
         System.out.println("ALGORITMO GENETICO - ROMPECABEZAS DE PIEZAS ENCAJABLES");
@@ -171,36 +174,36 @@ public class Genetico {
         System.out.println("Fitness objetivo (todos los lados calzan): " + fitnessObjetivo);
         System.out.println();
 
-        // Inicializar poblacion SIN REPETIDOS
+        // Inicializar poblacion SIN REPETIDOS - O(P * N)
         List<List<Pieza>> poblacion = inicializarPoblacionSinRepetidos(board, tamPoblacion);
         mejoresResultados = new ArrayList<>();
-        asignaciones += 2;
+        asignaciones += 2; // +2
 
         System.out.println("--- POBLACION INICIAL (sin repetidos) ---");
-        for (int i = 0; i < poblacion.size(); i++) {
-            int fit = calcularFitness(poblacion.get(i), n);
+        for (int i = 0; i < poblacion.size(); i++) { // P iteraciones, cada una O(N)
+            int fit = calcularFitness(poblacion.get(i), n); // +P * O(N)
             System.out
                     .println("Individuo " + (i + 1) + ": " + cromosomaToString(poblacion.get(i)) + " fitness: " + fit);
         }
         System.out.println();
 
-        // Evolucion por 10 generaciones
-        for (int gen = 1; gen <= numGeneraciones; gen++) {
-            comparaciones++;
+        // Evolucion por G=10 generaciones
+        for (int gen = 1; gen <= numGeneraciones; gen++) { // G iteraciones
+            comparaciones++; // +G
 
             System.out.println("=".repeat(60));
             System.out.println("GENERACION " + gen);
             System.out.println("=".repeat(60));
             System.out.println();
 
-            // Evaluar poblacion actual
+            // Evaluar poblacion actual - O(P * N)
             int[] fitnesses = new int[poblacion.size()];
-            asignaciones++;
+            asignaciones++; // +G
 
-            for (int i = 0; i < poblacion.size(); i++) {
-                comparaciones++;
-                fitnesses[i] = calcularFitness(poblacion.get(i), n);
-                asignaciones++;
+            for (int i = 0; i < poblacion.size(); i++) { // P iteraciones
+                comparaciones++; // +G*P
+                fitnesses[i] = calcularFitness(poblacion.get(i), n); // +G * P * O(N)
+                asignaciones++; // +G*P
             }
 
             // Guardar mejores para el resultado final
@@ -209,20 +212,21 @@ public class Genetico {
             // Lista para almacenar todos los hijos generados
             List<List<Pieza>> todosLosHijos = new ArrayList<>();
             Set<String> hijosGenerados = new HashSet<>(); // Para evitar hijos repetidos
-            asignaciones += 2;
+            asignaciones += 2; // +2G
 
             // Generar la cantidad de hijos especificada
             int crucesRealizados = 0;
             int intentosSinProgreso = 0;
             int maxIntentosSinProgreso = cantidadHijos * 10; // limite para evitar bucle infinito
-            asignaciones++;
+            asignaciones++; // +G
 
-            while (todosLosHijos.size() < cantidadHijos && intentosSinProgreso < maxIntentosSinProgreso) {
-                comparaciones++;
+            // Generar H hijos - cada cruce es O(N^2)
+            while (todosLosHijos.size() < cantidadHijos && intentosSinProgreso < maxIntentosSinProgreso) { // H/2 cruces
+                comparaciones++; // +G*H
                 crucesRealizados++;
                 int hijosPrevios = todosLosHijos.size();
 
-                // Seleccionar padres (los mejores de la poblacion)
+                // Seleccionar padres (los mejores de la poblacion) - O(P)
                 int idxPadre1 = seleccionarMejor(fitnesses);
                 int idxPadre2 = seleccionarSegundoMejor(fitnesses, idxPadre1);
 
@@ -230,15 +234,15 @@ public class Genetico {
                 List<Pieza> padre2 = poblacion.get(idxPadre2);
                 int fitPadre1 = fitnesses[idxPadre1];
                 int fitPadre2 = fitnesses[idxPadre2];
-                asignaciones += 4;
+                asignaciones += 4; // +4*G*H
 
-                // Realizar cruce PMX (no repite ni omite piezas)
-                List<List<Pieza>> hijos = crucePMX(padre1, padre2);
+                // Realizar cruce PMX (no repite ni omite piezas) - O(N^2)
+                List<List<Pieza>> hijos = crucePMX(padre1, padre2); // +G * H * O(N^2)
                 List<Pieza> hijo1 = hijos.get(0);
                 List<Pieza> hijo2 = hijos.get(1);
-                int fitHijo1 = calcularFitness(hijo1, n);
-                int fitHijo2 = calcularFitness(hijo2, n);
-                asignaciones += 5;
+                int fitHijo1 = calcularFitness(hijo1, n); // +G * H * O(N)
+                int fitHijo2 = calcularFitness(hijo2, n); // +G * H * O(N)
+                asignaciones += 5; // +5*G*H
 
                 // Imprimir informacion del cruce
                 System.out.println("--- Cruce " + crucesRealizados + " ---");
@@ -248,7 +252,7 @@ public class Genetico {
                 System.out.println("Hijo2:  " + cromosomaToString(hijo2) + " puntuacion: " + fitHijo2);
                 System.out.println();
 
-                // Aplicar mutacion si mejora
+                // Aplicar mutacion si mejora - O(N)
                 hijo1 = aplicarMutacionConImpresion(hijo1, fitHijo1, n, "Hijo1");
                 hijo2 = aplicarMutacionConImpresion(hijo2, fitHijo2, n, "Hijo2");
 
@@ -277,43 +281,43 @@ public class Genetico {
 
             // Combinar poblacion actual con hijos (compiten entre si)
             List<ResultadoIndividuo> todosIndividuos = new ArrayList<>();
-            asignaciones++;
+            asignaciones++; // +G
 
             System.out.println("--- Competencia: Padres vs Hijos ---");
 
-            // Agregar poblacion actual (padres)
+            // Agregar poblacion actual (padres) - O(P)
             for (int i = 0; i < poblacion.size(); i++) {
-                comparaciones++;
+                comparaciones++; // +G*P
                 todosIndividuos.add(new ResultadoIndividuo(poblacion.get(i), fitnesses[i]));
-                asignaciones++;
+                asignaciones++; // +G*P
             }
 
-            // Agregar hijos
+            // Agregar hijos - O(H * N)
             for (List<Pieza> hijo : todosLosHijos) {
-                int fitHijo = calcularFitness(hijo, n);
+                int fitHijo = calcularFitness(hijo, n); // +G * H * O(N)
                 todosIndividuos.add(new ResultadoIndividuo(hijo, fitHijo));
-                asignaciones += 2;
+                asignaciones += 2; // +2*G*H
             }
 
             System.out.println("Total competidores: " + todosIndividuos.size() +
                     " (" + poblacion.size() + " padres + " + todosLosHijos.size() + " hijos)");
 
-            // Ordenar por fitness (mayor a menor) - Los mejores sobreviven
+            // Ordenar por fitness (mayor a menor) - O((P+H) * log(P+H))
             Collections.sort(todosIndividuos, (a, b) -> b.fitness - a.fitness);
-            asignaciones++;
+            asignaciones++; // +G
 
             // Reemplazo: mantener solo los mejores (tamano de poblacion original)
             // Eliminando repetidos
             poblacion.clear();
             Set<String> usados = new HashSet<>();
 
-            for (int i = 0; i < todosIndividuos.size() && poblacion.size() < tamPoblacion; i++) {
-                comparaciones += 2;
-                String clave = cromosomaToKey(todosIndividuos.get(i).cromosoma);
+            for (int i = 0; i < todosIndividuos.size() && poblacion.size() < tamPoblacion; i++) { // O(P+H)
+                comparaciones += 2; // +2*G*(P+H)
+                String clave = cromosomaToKey(todosIndividuos.get(i).cromosoma); // +G*(P+H)*O(N)
                 if (!usados.contains(clave)) {
                     poblacion.add(todosIndividuos.get(i).cromosoma);
                     usados.add(clave);
-                    asignaciones++;
+                    asignaciones++; // +G*P
                 }
             }
 
@@ -328,12 +332,12 @@ public class Genetico {
                 }
             }
 
-            // Recalcular fitnesses
+            // Recalcular fitnesses - O(P * N)
             fitnesses = new int[poblacion.size()];
             for (int i = 0; i < poblacion.size(); i++) {
-                comparaciones++;
-                fitnesses[i] = calcularFitness(poblacion.get(i), n);
-                asignaciones++;
+                comparaciones++; // +G*P
+                fitnesses[i] = calcularFitness(poblacion.get(i), n); // +G * P * O(N)
+                asignaciones++; // +G*P
             }
 
             // Mostrar sobrevivientes
@@ -350,7 +354,7 @@ public class Genetico {
             System.out.println();
 
             // Verificar si encontramos solucion optima
-            comparaciones++;
+            comparaciones++; // +G
             if (mejorFitGen == fitnessObjetivo) {
                 System.out.println("*** SOLUCION OPTIMA ENCONTRADA EN GENERACION " + gen + " ***");
                 aplicarSolucion(board, poblacion.get(0));
@@ -370,6 +374,23 @@ public class Genetico {
 
         return board.checkTablero();
     }
+    // Suma solve:
+    // - Inicializacion: O(P * N)
+    // - Fitness inicial: O(P * N)
+    // - Por cada generacion G:
+    //   - Evaluar poblacion: O(P * N)
+    //   - Generar H hijos con cruces: O(H * N^2) (cada cruce PMX es O(N^2))
+    //   - Fitness de hijos: O(H * N)
+    //   - Ordenamiento: O((P+H) * log(P+H))
+    //   - Seleccion: O((P+H) * N)
+    //   - Recalcular fitness: O(P * N)
+    // 
+    // T_solve(N, P, H, G) = O(P*N) + G * [O(P*N) + O(H*N^2) + O((P+H)*log(P+H)) + O((P+H)*N)]
+    //                     = O(P*N) + G * O(H*N^2 + (P+H)*N)
+    //                     = O(G * H * N^2) (termino dominante)
+    // 
+    // Como G=10, P y H son constantes pequenias relativas a N:
+    // T_solve(N) = O(N^2)
 
     /**
      * Genera una clave unica para un cromosoma (para detectar repetidos)
@@ -551,30 +572,32 @@ public class Genetico {
     private List<List<Pieza>> inicializarPoblacionSinRepetidos(Tablero board, int tamPoblacion) {
         List<List<Pieza>> poblacion = new ArrayList<>();
         Set<String> usados = new HashSet<>();
-        asignaciones += 2;
+        asignaciones += 2; // +2
 
         int intentos = 0;
         int maxIntentos = tamPoblacion * 100;
 
-        while (poblacion.size() < tamPoblacion && intentos < maxIntentos) {
-            comparaciones++;
+        while (poblacion.size() < tamPoblacion && intentos < maxIntentos) { // P iteraciones (en promedio)
+            comparaciones++; // +P
             intentos++;
 
-            List<Pieza> individuo = new ArrayList<>(board.listaPiezas);
-            Collections.shuffle(individuo, random);
-            asignaciones++;
+            List<Pieza> individuo = new ArrayList<>(board.listaPiezas); // +P (copia de N elementos = O(N))
+            Collections.shuffle(individuo, random); // +P * O(N) para shuffle
+            asignaciones++; // +P
 
-            String clave = cromosomaToKey(individuo);
-            comparaciones++;
-            if (!usados.contains(clave)) {
+            String clave = cromosomaToKey(individuo); // +P * O(N) para generar clave
+            comparaciones++; // +P
+            if (!usados.contains(clave)) { // O(1) amortizado para HashSet
                 poblacion.add(individuo);
                 usados.add(clave);
-                asignaciones += 2;
+                asignaciones += 2; // +2P (peor caso)
             }
         }
 
         return poblacion;
     }
+    // Suma inicializarPoblacionSinRepetidos: 2 + P + P*N + P*N + P + P*N + P + 2P = 3*P*N + 6P + 2
+    // T_inicializarPoblacion(P, N) = O(P * N)
 
     /**
      * Calcula el fitness de un individuo (permutacion de piezas).
@@ -587,38 +610,38 @@ public class Genetico {
      */
     private int calcularFitness(List<Pieza> individuo, int n) {
         int fitness = 0;
-        asignaciones++;
+        asignaciones++; // +1
 
-        for (int i = 0; i < n; i++) {
-            comparaciones++;
-            for (int j = 0; j < n; j++) {
-                comparaciones++;
+        for (int i = 0; i < n; i++) { // sqrt(N) iteraciones
+            comparaciones++; // +sqrt(N)
+            for (int j = 0; j < n; j++) { // sqrt(N) iteraciones -> N total
+                comparaciones++; // +N
 
                 int idx = i * n + j;
                 Pieza actual = individuo.get(idx);
-                asignaciones += 2;
+                asignaciones += 2; // +2N
 
                 // Verificar conexion con pieza de la derecha (lados que calzan)
-                comparaciones++;
+                comparaciones++; // +N
                 if (j < n - 1) {
                     Pieza derecha = individuo.get(idx + 1);
-                    asignaciones++;
-                    comparaciones++;
+                    asignaciones++; // +N (peor caso)
+                    comparaciones++; // +N
                     if (actual.getRight() == derecha.getLeft()) {
                         fitness++;
-                        asignaciones++;
+                        asignaciones++; // +N (peor caso)
                     }
                 }
 
                 // Verificar conexion con pieza de abajo (lados que calzan)
-                comparaciones++;
+                comparaciones++; // +N
                 if (i < n - 1) {
                     Pieza abajo = individuo.get(idx + n);
-                    asignaciones++;
-                    comparaciones++;
+                    asignaciones++; // +N (peor caso)
+                    comparaciones++; // +N
                     if (actual.getDown() == abajo.getUp()) {
                         fitness++;
-                        asignaciones++;
+                        asignaciones++; // +N (peor caso)
                     }
                 }
             }
@@ -626,6 +649,8 @@ public class Genetico {
 
         return fitness;
     }
+    // Suma calcularFitness: 1 + sqrt(N) + N + 2N + N + N + N + N + N + N + N = 10N + sqrt(N) + 1
+    // T_calcularFitness(N) = O(N)
 
     /**
      * Cruce PMX (Partially Mapped Crossover) para permutaciones.
@@ -635,32 +660,34 @@ public class Genetico {
      */
     private List<List<Pieza>> crucePMX(List<Pieza> padre1, List<Pieza> padre2) {
         int n = padre1.size();
-        asignaciones++;
+        asignaciones++; // +1
 
         // Seleccionar dos puntos de corte
         int punto1 = random.nextInt(n);
         int punto2 = random.nextInt(n);
-        asignaciones += 2;
+        asignaciones += 2; // +2
 
-        comparaciones++;
+        comparaciones++; // +1
         if (punto1 > punto2) {
             int temp = punto1;
             punto1 = punto2;
             punto2 = temp;
-            asignaciones += 3;
+            asignaciones += 3; // +3 (peor caso)
         }
 
-        List<Pieza> hijo1 = crearHijoPMX(padre1, padre2, punto1, punto2);
-        List<Pieza> hijo2 = crearHijoPMX(padre2, padre1, punto1, punto2);
-        asignaciones += 2;
+        List<Pieza> hijo1 = crearHijoPMX(padre1, padre2, punto1, punto2); // +O(N^2)
+        List<Pieza> hijo2 = crearHijoPMX(padre2, padre1, punto1, punto2); // +O(N^2)
+        asignaciones += 2; // +2
 
         List<List<Pieza>> hijos = new ArrayList<>();
         hijos.add(hijo1);
         hijos.add(hijo2);
-        asignaciones++;
+        asignaciones++; // +1
 
         return hijos;
     }
+    // Suma crucePMX: 1 + 2 + 1 + 3 + 2*O(N^2) + 2 + 1 = 2*O(N^2) + 10
+    // T_crucePMX(N) = O(N^2)
 
     /**
      * Crea un hijo usando el cruce PMX.
@@ -671,19 +698,19 @@ public class Genetico {
         int n = padre1.size();
         Pieza[] hijo = new Pieza[n];
         boolean[] usado = new boolean[n];
-        asignaciones += 3;
+        asignaciones += 3; // +3
 
-        // Copiar segmento del padre1
-        for (int i = punto1; i <= punto2; i++) {
-            comparaciones++;
+        // Copiar segmento del padre1 (k = punto2 - punto1 + 1 elementos)
+        for (int i = punto1; i <= punto2; i++) { // k iteraciones
+            comparaciones++; // +k
             hijo[i] = padre1.get(i);
-            asignaciones++;
-            // Marcar la pieza como usada
-            for (int j = 0; j < n; j++) {
-                comparaciones++;
+            asignaciones++; // +k
+            // Marcar la pieza como usada - busqueda lineal O(N)
+            for (int j = 0; j < n; j++) { // N iteraciones por cada k -> k*N total
+                comparaciones++; // +k*N
                 if (padre2.get(j) == hijo[i]) {
                     usado[j] = true;
-                    asignaciones++;
+                    asignaciones++; // +k (peor caso)
                     break;
                 }
             }
@@ -691,38 +718,41 @@ public class Genetico {
 
         // Llenar el resto con piezas del padre2 en orden (sin repetir)
         int idxPadre2 = 0;
-        asignaciones++;
-        for (int i = 0; i < n; i++) {
-            comparaciones++;
-            comparaciones++;
+        asignaciones++; // +1
+        for (int i = 0; i < n; i++) { // N iteraciones
+            comparaciones++; // +N
+            comparaciones++; // +N
             if (i >= punto1 && i <= punto2) {
                 continue; // Ya fue llenado desde padre1
             }
 
             // Buscar siguiente pieza no usada del padre2
-            while (usado[idxPadre2]) {
-                comparaciones++;
+            while (usado[idxPadre2]) { // O(N) en total para todo el for
+                comparaciones++; // +N (amortizado)
                 idxPadre2++;
-                asignaciones++;
+                asignaciones++; // +N (amortizado)
             }
-            comparaciones++;
+            comparaciones++; // +N
 
             hijo[i] = padre2.get(idxPadre2);
             usado[idxPadre2] = true;
             idxPadre2++;
-            asignaciones += 3;
+            asignaciones += 3; // +3*(N-k)
         }
 
         // Convertir array a lista
         List<Pieza> resultado = new ArrayList<>();
-        asignaciones++;
-        for (Pieza p : hijo) {
+        asignaciones++; // +1
+        for (Pieza p : hijo) { // N iteraciones
             resultado.add(p);
-            asignaciones++;
+            asignaciones++; // +N
         }
 
         return resultado;
     }
+    // Suma crearHijoPMX: 3 + k + k + k*N + k + 1 + N + N + N + N + 3*(N-k) + 1 + N = k*N + 8N + 3k + 5
+    // Peor caso k = N: N^2 + 8N + 3N + 5 = N^2 + 11N + 5
+    // T_crearHijoPMX(N) = O(N^2)
 
     /**
      * Aplica una solucion (permutacion de piezas) al tablero
@@ -742,3 +772,56 @@ public class Genetico {
         }
     }
 }
+/**
+ * ANALISIS DE COMPLEJIDAD NO EMPIRICO GLOBAL:
+ * Sea N el numero total de piezas/celdas (N = n * n).
+ * Sea P el tamanio de la poblacion.
+ * Sea H la cantidad de hijos por generacion.
+ * Sea G el numero de generaciones (siempre G = 10).
+ * 
+ * COMPLEJIDAD DE METODOS CLAVE:
+ * - calcularFitness(individuo, n): O(N)
+ *   Recorre todas las N piezas verificando conexiones con vecinos.
+ * 
+ * - crearHijoPMX(padre1, padre2, punto1, punto2): O(N^2)
+ *   El bucle anidado para marcar piezas usadas causa O(k * N) donde k puede ser N.
+ * 
+ * - crucePMX(padre1, padre2): O(N^2)
+ *   Llama a crearHijoPMX dos veces: 2 * O(N^2) = O(N^2).
+ * 
+ * - inicializarPoblacionSinRepetidos(board, tamPoblacion): O(P * N)
+ *   Crea P individuos, cada uno requiere shuffle O(N) y clave O(N).
+ * 
+ * - solve(board): O(G * H * N^2)
+ *   Por cada generacion G:
+ *     - Evaluar P individuos: O(P * N)
+ *     - Generar H hijos con cruces PMX: O(H * N^2)
+ *     - Calcular fitness de H hijos: O(H * N)
+ *     - Ordenar P+H individuos: O((P+H) * log(P+H))
+ *     - Seleccion con claves: O((P+H) * N)
+ *   Total por generacion: O(H * N^2) domina.
+ * 
+ * T(N, P, H, G) = O(P * N) + G * [O(P * N) + O(H * N^2) + O((P+H) * log(P+H))]
+ *               = O(G * H * N^2)
+ * 
+ * Como G = 10 (constante), y P, H son constantes pequenias determinadas por n:
+ *   - Para n <= 3: P = 3, H = 6
+ *   - Para n <= 5: P = 5, H = 10
+ *   - Para n <= 10: P = 10, H = 20
+ *   - Para n <= 15: P = 15, H = 30
+ *   - Para n > 15: P = 30, H = 60
+ * 
+ * Dado que G, P y H son constantes relativas a N:
+ * 
+ * T(N) = c * N^2 donde c = G * H (constante)
+ * 
+ * Complejidad Final Big O: O(N^2)
+ * En terminos del lado n del tablero: O(n^4) ya que N = n^2
+ * 
+ * COMPARACION CON FUERZA BRUTA:
+ * - Fuerza Bruta: O(N * N!) - factorial, intratable para N > 10
+ * - Genetico: O(N^2) - polinomial, escalable para N grandes
+ * 
+ * El algoritmo genetico sacrifica garantia de optimalidad por eficiencia,
+ * encontrando soluciones aproximadas en tiempo polinomial.
+ */

@@ -58,7 +58,7 @@ public class Main {
     /** Tamanos maximos recomendados para cada algoritmo */
     static final int maxSizeFuerzaBruta = 5; // Sin timeout
     static final int maxSizeVorazBacktrack = 5; // Sin timeout
-    static final int maxSizeConTimeout = 30; // Máximo tamaño para ejecutar con timeout (omite 60, 100)
+    static final int maxSizeConTimeout = 10; // Máximo tamaño para ejecutar con timeout (omite 60, 100)
 
     // ========================================================================
     // ALMACENAMIENTO DE RESULTADOS
