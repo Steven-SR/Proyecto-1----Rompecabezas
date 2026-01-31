@@ -3,6 +3,8 @@ import java.util.List;
 
 public class FuerzaBruta {
 
+// Fecha de creación: 25 de enero de 2026
+// Última modificación: 28 de enero de 2026
     // Contadores para analisis de complejidad
     private long comparaciones = 0;
     private long asignaciones = 0;
@@ -20,6 +22,8 @@ public class FuerzaBruta {
      * @param piece La pieza que se desea colocar
      * @return true si la pieza encaja legalmente, false de lo contrario
      */
+// Fecha de creación: 25 de enero de 2026
+// Última modificación: 28 de enero de 2026
     public boolean canPlace(Tablero board, int row, int col, Pieza piece) {
         // Si es la primera pieza no ocupa verificar
         comparaciones += 2; // row == 0 && col == 0 // +1

@@ -1,3 +1,5 @@
+// Fecha de creación: 25 de enero de 2026
+// Última modificación: 30 de enero de 2026
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -62,6 +64,14 @@ public class Genetico {
     // Almacenar los mejores resultados
     private List<ResultadoIndividuo> mejoresResultados;
 
+    // Toggle para imprimir informacion detallada de cruces y mutaciones
+    private boolean verbose = false;
+
+    // Almacenar el resultado formateado del Top 3 para el archivo
+    private String top3Resultado = "";
+    private int ultimoTamano = 0;
+    private int ultimoFitnessObjetivo = 0;
+
     /**
      * Clase para almacenar un individuo con su fitness
      */
@@ -76,11 +86,38 @@ public class Genetico {
     }
 
     /**
-     * Constructor
+     * Constructor por defecto (sin verbose)
      */
     public Genetico() {
         this.random = new Random();
+        this.verbose = false;
         resetearContadores();
+    }
+
+    /**
+     * Constructor con opcion de verbose
+     * 
+     * @param verbose true para imprimir informacion detallada de cruces y
+     *                mutaciones
+     */
+    public Genetico(boolean verbose) {
+        this.random = new Random();
+        this.verbose = verbose;
+        resetearContadores();
+    }
+
+    /**
+     * Activa o desactiva la impresion detallada
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    /**
+     * Verifica si la impresion detallada esta habilitada
+     */
+    public boolean isVerbose() {
+        return verbose;
     }
 
     /**
@@ -141,7 +178,7 @@ public class Genetico {
      * Resuelve el rompecabezas usando algoritmo genetico
      * 
      * Donde: N = numero total de piezas (n*n), P = tamanio poblacion,
-     *        H = cantidad de hijos por generacion, G = numero de generaciones (10)
+     * H = cantidad de hijos por generacion, G = numero de generaciones (10)
      */
     public boolean solve(Tablero board) {
         resetearContadores();
@@ -157,44 +194,50 @@ public class Genetico {
         int fitnessObjetivo = 2 * n * (n - 1);
         asignaciones += 5; // +5
 
-        System.out.println("=".repeat(60));
-        System.out.println("ALGORITMO GENETICO - ROMPECABEZAS DE PIEZAS ENCAJABLES");
-        System.out.println("=".repeat(60));
-        System.out.println();
-        System.out.println("--- REPRESENTACION DEL CROMOSOMA ---");
-        System.out.println("Cromosoma: Permutacion de " + numPiezas + " piezas");
-        System.out.println("Gen: Cada pieza en una posicion del cromosoma");
-        System.out.println("Alelos: 4 numeros por pieza (up, right, down, left)");
-        System.out.println();
-        System.out.println("--- PARAMETROS ---");
-        System.out.println("Tamano del tablero: " + n + "x" + n);
-        System.out.println("Poblacion inicial: " + tamPoblacion + " (SIN REPETIDOS)");
-        System.out.println("Cantidad de hijos por generacion: " + cantidadHijos);
-        System.out.println("Numero de generaciones: " + numGeneraciones);
-        System.out.println("Fitness objetivo (todos los lados calzan): " + fitnessObjetivo);
-        System.out.println();
+        if (verbose) {
+            System.out.println("=".repeat(60));
+            System.out.println("ALGORITMO GENETICO - ROMPECABEZAS DE PIEZAS ENCAJABLES");
+            System.out.println("=".repeat(60));
+            System.out.println();
+            System.out.println("--- REPRESENTACION DEL CROMOSOMA ---");
+            System.out.println("Cromosoma: Permutacion de " + numPiezas + " piezas");
+            System.out.println("Gen: Cada pieza en una posicion del cromosoma");
+            System.out.println("Alelos: 4 numeros por pieza (up, right, down, left)");
+            System.out.println();
+            System.out.println("--- PARAMETROS ---");
+            System.out.println("Tamano del tablero: " + n + "x" + n);
+            System.out.println("Poblacion inicial: " + tamPoblacion + " (SIN REPETIDOS)");
+            System.out.println("Cantidad de hijos por generacion: " + cantidadHijos);
+            System.out.println("Numero de generaciones: " + numGeneraciones);
+            System.out.println("Fitness objetivo (todos los lados calzan): " + fitnessObjetivo);
+            System.out.println();
+        }
 
         // Inicializar poblacion SIN REPETIDOS - O(P * N)
         List<List<Pieza>> poblacion = inicializarPoblacionSinRepetidos(board, tamPoblacion);
         mejoresResultados = new ArrayList<>();
         asignaciones += 2; // +2
 
-        System.out.println("--- POBLACION INICIAL (sin repetidos) ---");
-        for (int i = 0; i < poblacion.size(); i++) { // P iteraciones, cada una O(N)
-            int fit = calcularFitness(poblacion.get(i), n); // +P * O(N)
-            System.out
-                    .println("Individuo " + (i + 1) + ": " + cromosomaToString(poblacion.get(i)) + " fitness: " + fit);
+        if (verbose) {
+            System.out.println("--- POBLACION INICIAL (sin repetidos) ---");
+            for (int i = 0; i < poblacion.size(); i++) { // P iteraciones, cada una O(N)
+                int fit = calcularFitness(poblacion.get(i), n); // +P * O(N)
+                System.out.println(
+                        "Individuo " + (i + 1) + ": " + cromosomaToString(poblacion.get(i)) + " fitness: " + fit);
+            }
+            System.out.println();
         }
-        System.out.println();
 
         // Evolucion por G=10 generaciones
         for (int gen = 1; gen <= numGeneraciones; gen++) { // G iteraciones
             comparaciones++; // +G
 
-            System.out.println("=".repeat(60));
-            System.out.println("GENERACION " + gen);
-            System.out.println("=".repeat(60));
-            System.out.println();
+            if (verbose) {
+                System.out.println("=".repeat(60));
+                System.out.println("GENERACION " + gen);
+                System.out.println("=".repeat(60));
+                System.out.println();
+            }
 
             // Evaluar poblacion actual - O(P * N)
             int[] fitnesses = new int[poblacion.size()];
@@ -244,17 +287,19 @@ public class Genetico {
                 int fitHijo2 = calcularFitness(hijo2, n); // +G * H * O(N)
                 asignaciones += 5; // +5*G*H
 
-                // Imprimir informacion del cruce
-                System.out.println("--- Cruce " + crucesRealizados + " ---");
-                System.out.println("Padre1: " + cromosomaToString(padre1) + " puntuacion: " + fitPadre1);
-                System.out.println("Padre2: " + cromosomaToString(padre2) + " puntuacion: " + fitPadre2);
-                System.out.println("Hijo1:  " + cromosomaToString(hijo1) + " puntuacion: " + fitHijo1);
-                System.out.println("Hijo2:  " + cromosomaToString(hijo2) + " puntuacion: " + fitHijo2);
-                System.out.println();
+                // Imprimir informacion del cruce en formato requerido
+                if (verbose) {
+                    System.out.println("--- Cruce " + crucesRealizados + " ---");
+                    System.out.println("Padre 1: " + cromosomaToString(padre1) + " puntuacion: " + fitPadre1);
+                    System.out.println("Padre 2: " + cromosomaToString(padre2) + " puntuacion: " + fitPadre2);
+                    System.out.println("Hijo 1:  " + cromosomaToString(hijo1) + " puntuacion: " + fitHijo1);
+                    System.out.println("Hijo 2:  " + cromosomaToString(hijo2) + " puntuacion: " + fitHijo2);
+                    System.out.println();
+                }
 
                 // Aplicar mutacion si mejora - O(N)
-                hijo1 = aplicarMutacionConImpresion(hijo1, fitHijo1, n, "Hijo1");
-                hijo2 = aplicarMutacionConImpresion(hijo2, fitHijo2, n, "Hijo2");
+                hijo1 = aplicarMutacionConImpresion(hijo1, fitHijo1, n, "Hijo 1");
+                hijo2 = aplicarMutacionConImpresion(hijo2, fitHijo2, n, "Hijo 2");
 
                 // Agregar hijos si no estan repetidos
                 String clave1 = cromosomaToKey(hijo1);
@@ -283,7 +328,9 @@ public class Genetico {
             List<ResultadoIndividuo> todosIndividuos = new ArrayList<>();
             asignaciones++; // +G
 
-            System.out.println("--- Competencia: Padres vs Hijos ---");
+            if (verbose) {
+                System.out.println("--- Competencia: Padres vs Hijos ---");
+            }
 
             // Agregar poblacion actual (padres) - O(P)
             for (int i = 0; i < poblacion.size(); i++) {
@@ -299,8 +346,10 @@ public class Genetico {
                 asignaciones += 2; // +2*G*H
             }
 
-            System.out.println("Total competidores: " + todosIndividuos.size() +
-                    " (" + poblacion.size() + " padres + " + todosLosHijos.size() + " hijos)");
+            if (verbose) {
+                System.out.println("Total competidores: " + todosIndividuos.size() +
+                        " (" + poblacion.size() + " padres + " + todosLosHijos.size() + " hijos)");
+            }
 
             // Ordenar por fitness (mayor a menor) - O((P+H) * log(P+H))
             Collections.sort(todosIndividuos, (a, b) -> b.fitness - a.fitness);
@@ -341,24 +390,30 @@ public class Genetico {
             }
 
             // Mostrar sobrevivientes
-            System.out.println("\nSobrevivientes de generacion " + gen + ":");
-            for (int i = 0; i < poblacion.size(); i++) {
-                System.out.println("  " + (i + 1) + ". " + cromosomaToString(poblacion.get(i)) +
-                        " fitness: " + fitnesses[i]);
+            if (verbose) {
+                System.out.println("\nSobrevivientes de generacion " + gen + ":");
+                for (int i = 0; i < poblacion.size(); i++) {
+                    System.out.println("  " + (i + 1) + ". " + cromosomaToString(poblacion.get(i)) +
+                            " fitness: " + fitnesses[i]);
+                }
             }
 
             // Mostrar mejor de esta generacion
             int mejorFitGen = fitnesses[0];
-            System.out
-                    .println("\n>> Mejor fitness de generacion " + gen + ": " + mejorFitGen + " / " + fitnessObjetivo);
-            System.out.println();
+            if (verbose) {
+                System.out.println(
+                        "\n>> Mejor fitness de generacion " + gen + ": " + mejorFitGen + " / " + fitnessObjetivo);
+                System.out.println();
+            }
 
             // Verificar si encontramos solucion optima
             comparaciones++; // +G
             if (mejorFitGen == fitnessObjetivo) {
-                System.out.println("*** SOLUCION OPTIMA ENCONTRADA EN GENERACION " + gen + " ***");
+                if (verbose) {
+                    System.out.println("*** SOLUCION OPTIMA ENCONTRADA EN GENERACION " + gen + " ***");
+                }
                 aplicarSolucion(board, poblacion.get(0));
-                imprimirTop3(n);
+                imprimirTop3(n, fitnessObjetivo);
                 return true;
             }
         }
@@ -369,8 +424,8 @@ public class Genetico {
             aplicarSolucion(board, mejoresResultados.get(0).cromosoma);
         }
 
-        // Imprimir los 3 mejores resultados
-        imprimirTop3(n);
+        // Imprimir los 3 mejores resultados (siempre se imprime al final)
+        imprimirTop3(n, fitnessObjetivo);
 
         return board.checkTablero();
     }
@@ -378,17 +433,18 @@ public class Genetico {
     // - Inicializacion: O(P * N)
     // - Fitness inicial: O(P * N)
     // - Por cada generacion G:
-    //   - Evaluar poblacion: O(P * N)
-    //   - Generar H hijos con cruces: O(H * N^2) (cada cruce PMX es O(N^2))
-    //   - Fitness de hijos: O(H * N)
-    //   - Ordenamiento: O((P+H) * log(P+H))
-    //   - Seleccion: O((P+H) * N)
-    //   - Recalcular fitness: O(P * N)
-    // 
-    // T_solve(N, P, H, G) = O(P*N) + G * [O(P*N) + O(H*N^2) + O((P+H)*log(P+H)) + O((P+H)*N)]
-    //                     = O(P*N) + G * O(H*N^2 + (P+H)*N)
-    //                     = O(G * H * N^2) (termino dominante)
-    // 
+    // - Evaluar poblacion: O(P * N)
+    // - Generar H hijos con cruces: O(H * N^2) (cada cruce PMX es O(N^2))
+    // - Fitness de hijos: O(H * N)
+    // - Ordenamiento: O((P+H) * log(P+H))
+    // - Seleccion: O((P+H) * N)
+    // - Recalcular fitness: O(P * N)
+    //
+    // T_solve(N, P, H, G) = O(P*N) + G * [O(P*N) + O(H*N^2) + O((P+H)*log(P+H)) +
+    // O((P+H)*N)]
+    // = O(P*N) + G * O(H*N^2 + (P+H)*N)
+    // = O(G * H * N^2) (termino dominante)
+    //
     // Como G=10, P y H son constantes pequenias relativas a N:
     // T_solve(N) = O(N^2)
 
@@ -431,20 +487,25 @@ public class Genetico {
         int fitnessDespues = calcularFitness(mutado, n);
         asignaciones++;
 
-        System.out.println("--- Mutacion de " + nombre + " ---");
-        System.out.println("Individuo: " + cromosomaToString(individuo) + " puntuacion: " + fitnessAntes);
-        System.out.println("Mutacion:  " + cromosomaToString(mutado) + " puntuacion: " + fitnessDespues);
+        // Imprimir mutacion en formato requerido (solo si verbose)
+        if (verbose) {
+            System.out.println("--- Mutacion de " + nombre + " ---");
+            System.out.println("Individuo: " + cromosomaToString(individuo) + " puntuacion: " + fitnessAntes);
+            System.out.println("Mutacion:  " + cromosomaToString(mutado) + " puntuacion: " + fitnessDespues);
 
-        // Si mejora la puntuacion, aplicar la mutacion; si no, descartar
+            // Si mejora la puntuacion, aplicar la mutacion; si no, descartar
+            if (fitnessDespues > fitnessAntes) {
+                System.out.println(">> Mutacion ACEPTADA (mejora: " + fitnessAntes + " -> " + fitnessDespues + ")");
+            } else {
+                System.out.println(">> Mutacion RECHAZADA (no mejora: " + fitnessAntes + " -> " + fitnessDespues + ")");
+            }
+            System.out.println();
+        }
+
         comparaciones++;
         if (fitnessDespues > fitnessAntes) {
-            System.out.println(
-                    ">> Mutacion ACEPTADA (mejora el fitness: " + fitnessAntes + " -> " + fitnessDespues + ")");
-            System.out.println();
             return mutado;
         } else {
-            System.out.println(">> Mutacion RECHAZADA (no mejora: " + fitnessAntes + " -> " + fitnessDespues + ")");
-            System.out.println();
             return individuo;
         }
     }
@@ -475,28 +536,73 @@ public class Genetico {
     }
 
     /**
-     * Imprime los 3 mejores resultados al finalizar las 10 generaciones
+     * Imprime los 3 mejores resultados al finalizar las 10 generaciones.
+     * Este metodo SIEMPRE imprime los resultados (requerido por el proyecto).
+     * Tambien almacena el resultado formateado para el archivo.
+     * 
+     * @param n               Tamano del lado del tablero
+     * @param fitnessObjetivo Fitness maximo posible
      */
-    private void imprimirTop3(int n) {
-        System.out.println();
-        System.out.println("=".repeat(60));
-        System.out.println("TOP 3 MEJORES RESULTADOS (despues de 10 generaciones)");
-        System.out.println("=".repeat(60));
+    private void imprimirTop3(int n, int fitnessObjetivo) {
+        // Guardar para uso posterior
+        ultimoTamano = n;
+        ultimoFitnessObjetivo = fitnessObjetivo;
+        
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("\n");
+        sb.append("=".repeat(60)).append("\n");
+        sb.append("TOP 3 MEJORES POBLACIONES (despues de 10 generaciones)\n");
+        sb.append("Tamano del tablero: ").append(n).append("x").append(n).append("\n");
+        sb.append("=".repeat(60)).append("\n");
 
         Collections.sort(mejoresResultados, (a, b) -> b.fitness - a.fitness);
 
-        int fitnessObjetivo = 2 * n * (n - 1);
-
         for (int i = 0; i < Math.min(3, mejoresResultados.size()); i++) {
             ResultadoIndividuo resultado = mejoresResultados.get(i);
-            System.out.println();
-            System.out.println("--- LUGAR " + (i + 1) + " ---");
-            System.out.println("Puntuacion: " + resultado.fitness + " / " + fitnessObjetivo +
-                    " (" + String.format("%.1f", 100.0 * resultado.fitness / fitnessObjetivo) + "%)");
-            System.out.println("Cromosoma: " + cromosomaToString(resultado.cromosoma));
-            System.out.println("Tablero:");
-            imprimirTableroDesdecromosoma(resultado.cromosoma, n);
+            sb.append("\n");
+            sb.append("--- LUGAR ").append(i + 1).append(" ---\n");
+            sb.append("Puntuacion:  ").append(resultado.fitness).append(" / ").append(fitnessObjetivo);
+            sb.append(" (").append(String.format("%.1f", 100.0 * resultado.fitness / fitnessObjetivo)).append("%)\n");
+            
+            // Solo mostrar tablero para tamanos pequenos (evitar numeros largos)
+            if (n <= 5) {
+                sb.append("Tablero:\n");
+                sb.append(tableroToString(resultado.cromosoma, n));
+            }
         }
+        
+        // Almacenar para el archivo
+        top3Resultado = sb.toString();
+        
+        // Imprimir a consola
+        System.out.print(top3Resultado);
+    }
+
+    /**
+     * Obtiene el resultado del Top 3 formateado para escribir en archivo.
+     * 
+     * @return String con el Top 3 formateado
+     */
+    public String getTop3Resultado() {
+        return top3Resultado;
+    }
+
+    /**
+     * Convierte un tablero (cromosoma) a string formateado.
+     */
+    private String tableroToString(List<Pieza> cromosoma, int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int idx = i * n + j;
+                Pieza p = cromosoma.get(idx);
+                sb.append("[").append(p.getUp()).append(",").append(p.getRight());
+                sb.append(",").append(p.getDown()).append(",").append(p.getLeft()).append("] ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -596,7 +702,8 @@ public class Genetico {
 
         return poblacion;
     }
-    // Suma inicializarPoblacionSinRepetidos: 2 + P + P*N + P*N + P + P*N + P + 2P = 3*P*N + 6P + 2
+    // Suma inicializarPoblacionSinRepetidos: 2 + P + P*N + P*N + P + P*N + P + 2P =
+    // 3*P*N + 6P + 2
     // T_inicializarPoblacion(P, N) = O(P * N)
 
     /**
@@ -649,7 +756,8 @@ public class Genetico {
 
         return fitness;
     }
-    // Suma calcularFitness: 1 + sqrt(N) + N + 2N + N + N + N + N + N + N + N = 10N + sqrt(N) + 1
+    // Suma calcularFitness: 1 + sqrt(N) + N + 2N + N + N + N + N + N + N + N = 10N
+    // + sqrt(N) + 1
     // T_calcularFitness(N) = O(N)
 
     /**
@@ -750,7 +858,8 @@ public class Genetico {
 
         return resultado;
     }
-    // Suma crearHijoPMX: 3 + k + k + k*N + k + 1 + N + N + N + N + 3*(N-k) + 1 + N = k*N + 8N + 3k + 5
+    // Suma crearHijoPMX: 3 + k + k + k*N + k + 1 + N + N + N + N + 3*(N-k) + 1 + N
+    // = k*N + 8N + 3k + 5
     // Peor caso k = N: N^2 + 8N + 3N + 5 = N^2 + 11N + 5
     // T_crearHijoPMX(N) = O(N^2)
 
@@ -781,35 +890,36 @@ public class Genetico {
  * 
  * COMPLEJIDAD DE METODOS CLAVE:
  * - calcularFitness(individuo, n): O(N)
- *   Recorre todas las N piezas verificando conexiones con vecinos.
+ * Recorre todas las N piezas verificando conexiones con vecinos.
  * 
  * - crearHijoPMX(padre1, padre2, punto1, punto2): O(N^2)
- *   El bucle anidado para marcar piezas usadas causa O(k * N) donde k puede ser N.
+ * El bucle anidado para marcar piezas usadas causa O(k * N) donde k puede ser
+ * N.
  * 
  * - crucePMX(padre1, padre2): O(N^2)
- *   Llama a crearHijoPMX dos veces: 2 * O(N^2) = O(N^2).
+ * Llama a crearHijoPMX dos veces: 2 * O(N^2) = O(N^2).
  * 
  * - inicializarPoblacionSinRepetidos(board, tamPoblacion): O(P * N)
- *   Crea P individuos, cada uno requiere shuffle O(N) y clave O(N).
+ * Crea P individuos, cada uno requiere shuffle O(N) y clave O(N).
  * 
  * - solve(board): O(G * H * N^2)
- *   Por cada generacion G:
- *     - Evaluar P individuos: O(P * N)
- *     - Generar H hijos con cruces PMX: O(H * N^2)
- *     - Calcular fitness de H hijos: O(H * N)
- *     - Ordenar P+H individuos: O((P+H) * log(P+H))
- *     - Seleccion con claves: O((P+H) * N)
- *   Total por generacion: O(H * N^2) domina.
+ * Por cada generacion G:
+ * - Evaluar P individuos: O(P * N)
+ * - Generar H hijos con cruces PMX: O(H * N^2)
+ * - Calcular fitness de H hijos: O(H * N)
+ * - Ordenar P+H individuos: O((P+H) * log(P+H))
+ * - Seleccion con claves: O((P+H) * N)
+ * Total por generacion: O(H * N^2) domina.
  * 
  * T(N, P, H, G) = O(P * N) + G * [O(P * N) + O(H * N^2) + O((P+H) * log(P+H))]
- *               = O(G * H * N^2)
+ * = O(G * H * N^2)
  * 
  * Como G = 10 (constante), y P, H son constantes pequenias determinadas por n:
- *   - Para n <= 3: P = 3, H = 6
- *   - Para n <= 5: P = 5, H = 10
- *   - Para n <= 10: P = 10, H = 20
- *   - Para n <= 15: P = 15, H = 30
- *   - Para n > 15: P = 30, H = 60
+ * - Para n <= 3: P = 3, H = 6
+ * - Para n <= 5: P = 5, H = 10
+ * - Para n <= 10: P = 10, H = 20
+ * - Para n <= 15: P = 15, H = 30
+ * - Para n > 15: P = 30, H = 60
  * 
  * Dado que G, P y H son constantes relativas a N:
  * 

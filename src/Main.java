@@ -1,3 +1,5 @@
+// Fecha de creación: 25 de enero de 2026
+// Última modificación: 28 de enero de 2026
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,6 +50,12 @@ public class Main {
     /** Habilitar pruebas de Algoritmo Genetico */
     static final boolean testGenetico = true;
 
+    /**
+     * Habilitar impresion detallada del Algoritmo Genetico (cruces, mutaciones,
+     * etc.)
+     */
+    static final boolean geneticoVerbose = true;
+
     /** Tamanos de tablero a probar */
     static final int[] sizesSmall = { 3, 5, 10, 15, 30 };
     static final int[] sizesLarge = { 60, 100 };
@@ -58,7 +66,7 @@ public class Main {
     /** Tamanos maximos recomendados para cada algoritmo */
     static final int maxSizeFuerzaBruta = 5; // Sin timeout
     static final int maxSizeVorazBacktrack = 5; // Sin timeout
-    static final int maxSizeConTimeout = 10; // Máximo tamaño para ejecutar con timeout (omite 60, 100)
+    static final int maxSizeConTimeout = 0; // Máximo tamaño para ejecutar con timeout (omite 60, 100)
 
     // ========================================================================
     // ALMACENAMIENTO DE RESULTADOS
@@ -79,12 +87,14 @@ public class Main {
         long asignaciones;
         long memoriaBytes;
         String estado; // RESUELTO, NO_RESUELTO, TIMEOUT, ERROR
+        String detalleGenetico; // Top 3 resultados del algoritmo genetico
 
         resultadoPrueba(String algoritmo, int tamano, int rango) {
             this.algoritmo = algoritmo;
             this.tamano = tamano;
             this.rango = rango;
             this.estado = "PENDIENTE";
+            this.detalleGenetico = "";
         }
     }
 
@@ -106,6 +116,7 @@ public class Main {
         System.out.println("  - Voraz sin backtracking: " + (testVorazSinBacktracking ? "SI" : "NO"));
         System.out.println("  - Voraz con backtracking: " + (testVorazConBacktracking ? "SI" : "NO"));
         System.out.println("  - Genetico: " + (testGenetico ? "SI" : "NO"));
+        System.out.println("  - Genetico verbose (cruces/mutaciones): " + (geneticoVerbose ? "SI" : "NO"));
         System.out.println();
 
         // Construir lista de tamanos a probar
@@ -444,22 +455,26 @@ public class Main {
             tablero.createTablero();
             tablero.scrambleTablero();
 
-            // Resolver (suprimir salida del genetico para el main)
-            Genetico solver = new Genetico();
+            // Resolver con verbose segun configuracion
+            Genetico solver = new Genetico(geneticoVerbose);
 
-            // Redirigir stdout temporalmente para evitar mucha salida
+            // Solo redirigir stdout si verbose esta desactivado
             java.io.PrintStream originalOut = System.out;
-            System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
-                public void write(int b) {
-                }
-            }));
+            if (!geneticoVerbose) {
+                System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
+                    public void write(int b) {
+                    }
+                }));
+            }
 
             long startTime = System.nanoTime();
             boolean solved = solver.solve(tablero);
             long endTime = System.nanoTime();
 
-            // Restaurar stdout
-            System.setOut(originalOut);
+            // Restaurar stdout si fue redirigido
+            if (!geneticoVerbose) {
+                System.setOut(originalOut);
+            }
 
             // Medicion de memoria
             long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
@@ -470,6 +485,7 @@ public class Main {
             resultado.asignaciones = solver.getAsignaciones();
             resultado.memoriaBytes = Math.max(0, memoryAfter - memoryBefore);
             resultado.estado = solved ? "RESUELTO" : "NO_RESUELTO";
+            resultado.detalleGenetico = solver.getTop3Resultado();
 
         } catch (Exception e) {
             resultado.estado = "ERROR";
@@ -556,6 +572,21 @@ public class Main {
                                 "-",
                                 r.estado));
                     }
+                }
+            }
+
+            // Seccion especial: Top 3 del Algoritmo Genetico
+            writer.println();
+            writer.println();
+            writer.println("================================================================================");
+            writer.println("            DETALLE ALGORITMO GENETICO - TOP 3 POR TAMANO                       ");
+            writer.println("================================================================================");
+            
+            for (resultadoPrueba r : resultados) {
+                if (r.algoritmo.equals("Genetico") && r.detalleGenetico != null && !r.detalleGenetico.isEmpty()) {
+                    writer.println();
+                    writer.println("--- Rango: 0-" + r.rango + " ---");
+                    writer.println(r.detalleGenetico);
                 }
             }
 

@@ -1,5 +1,5 @@
-//Clase Pieza
-//! Mantener el orden arriba, derecha, abajo, izquierda (porque la profe dijo asi xddd)
+// Fecha de creación: 25 de enero de 2026
+// Última modificación: 27 de enero de 2026
 public class Pieza {
     //Cuatro lados de la pieza
     private int up;
@@ -13,6 +13,8 @@ public class Pieza {
         this.down = down;
         this.left = left;
         this.right = right;
+    // Fecha de creación: 25 de enero de 2026
+    // Última modificación: 25 de enero de 2026
     }
     //Getters
     public int getUp() {return up;}
